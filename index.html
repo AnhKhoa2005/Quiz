@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc Nghiệm Động</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.47.0/docxtemplater.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: auto;
+        }
+        h1, h2 {
+            color: #0056b3;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 98%;
+            height: 200px;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            resize: vertical;
+        }
+        button {
+            padding: 12px 25px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 0 auto 10px auto; /* Reduced margin */
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .button-group button {
+            width: 48%; /* Adjust width for two buttons */
+            margin: 0;
+        }
+
+        #quizSection {
+            display: none; /* Ẩn phần quiz ban đầu */
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        .question-container {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+        }
+        .question {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #333;
+        }
+        .answers button {
+            display: block;
+            width: calc(100% - 20px); /* Adjust for padding */
+            padding: 12px;
+            margin-bottom: 10px;
+            text-align: left;
+            background-color: #e9ecef;
+            color: #333;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .answers button:hover:not(:disabled) {
+            background-color: #d6e0e7;
+            border-color: #a7b7c2;
+        }
+        .answers button:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        .answers button.correct {
+            background-color: #d4edda; /* Green for correct */
+            border-color: #28a745;
+            font-weight: bold;
+        }
+        .answers button.wrong {
+            background-color: #f8d7da; /* Red for wrong */
+            border-color: #dc3545;
+        }
+        #result {
+            text-align: center;
+            font-size: 1.1em;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #result.correct-feedback {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        #result.wrong-feedback {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        #nextQuestionBtn {
+            display: none; /* Ẩn nút "Tiếp theo" ban đầu */
+            margin-top: 20px;
+            background-color: #28a745;
+        }
+        #nextQuestionBtn:hover {
+            background-color: #218838;
+        }
+        #quizCompleteMessage {
+            text-align: center;
+            font-size: 1.5em;
+            color: #007bff;
+            margin-top: 30px;
+            display: none;
+        }
+        /* Styles for Raw Input and Answer Selection */
+        #rawInputSection, #answerSelectionSection {
+            display: none; /* Hidden by default */
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+        }
+        #answerSelectionSection {
+            max-height: 500px; /* Limit height for scrolling */
+            overflow-y: auto; /* Enable vertical scrolling */
+        }
+        .raw-question-item {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px dashed #ccc;
+            border-radius: 5px;
+        }
+        .raw-question-item p {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .raw-question-item .raw-answers button {
+            display: inline-block; /* Display buttons inline */
+            width: auto; /* Auto width */
+            margin-right: 10px; /* Spacing between buttons */
+            margin-bottom: 5px;
+            padding: 8px 15px;
+            background-color: #dbe9f4; /* Lighter blue for selection */
+            color: #0056b3;
+            border: 1px solid #a3c9e6;
+        }
+        .raw-question-item .raw-answers button.selected-correct {
+            background-color: #28a745; /* Green when selected as correct */
+            color: white;
+            border-color: #218838;
+        }
+        #exportWordBtn {
+            background-color: #28a745; /* Green for export button */
+            margin-top: 20px;
+        }
+        #exportWordBtn:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tạo Câu Hỏi Trắc Nghiệm</h1>
+
+        <div id="mainInputSelection">
+            <h2>Chọn Phương Thức Nhập Liệu</h2>
+            <div class="button-group">
+                <button onclick="showManualInput()">Nhập thủ công (đã định dạng)</button>
+                <button onclick="showRawInput()">Nhập dữ liệu thô (chưa định dạng)</button>
+            </div>
+        </div>
+
+        <div id="manualInputSection" style="display: none;">
+            <h2>Nhập Câu Hỏi và Đáp Án (Đã định dạng + / -)</h2>
+            <textarea id="questionInput" placeholder="Nhập câu hỏi và đáp án theo định dạng:
+Câu hỏi 1
+-Đáp án sai
++Đáp án đúng
+-Đáp án sai
+
+Câu hỏi 2
++Đáp án đúng
+-Đáp án sai"></textarea>
+            <button onclick="saveQuestionsFromManual()">Bắt đầu Trắc nghiệm</button>
+            <button onclick="backToMainSelection()">Quay lại</button>
+        </div>
+
+        <div id="rawInputSection" style="display: none;">
+            <h2>Nhập Dữ liệu Thô (Chưa có + / -)</h2>
+            <textarea id="rawQuestionInput" placeholder="Nhập câu hỏi và đáp án theo định dạng:
+Câu hỏi 1
+Đáp án A
+Đáp án B
+Đáp án C
+Đáp án D
+
+Câu hỏi 2
+Đáp án A
+Đáp án B"></textarea>
+            <button onclick="processRawQuestions()">Tiếp tục (Chọn đáp án đúng)</button>
+            <button onclick="backToMainSelection()">Quay lại</button>
+        </div>
+
+        <div id="answerSelectionSection" style="display: none;">
+            <h2>Chọn Đáp Án Đúng</h2>
+            <div id="questionsForSelection">
+                </div>
+            <button id="exportWordBtn" onclick="exportAndStartQuiz()">Xuất Word & Bắt đầu Trắc nghiệm</button>
+            <button onclick="backToRawInput()">Quay lại</button>
+        </div>
+
+        <div id="quizSection">
+            <h2>Làm Trắc Nghiệm</h2>
+            <div id="quizContainer">
+                <div class="question-container">
+                    <p class="question" id="currentQuestion"></p>
+                    <div class="answers" id="answerButtons">
+                        </div>
+                </div>
+            </div>
+            <div id="result"></div>
+            <button id="nextQuestionBtn" onclick="nextQuestion()">Tiếp theo</button>
+            <div id="quizCompleteMessage">
+                <p>Chúc mừng! Bạn đã hoàn thành tất cả các câu hỏi.</p>
+                <button onclick="backToMainSelection()">Quay lại</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let questions = []; // Stores formatted questions (question, answers array, correctAnswer) for the quiz
+        let rawQuestions = []; // Stores unformatted questions temporarily for selection
+        let currentQuestionIndex = 0;
+        let shuffledQuestionIndices = [];
+
+        // --- View Management ---
+        function showMainSelection() {
+            document.getElementById('mainInputSelection').style.display = 'block';
+            document.getElementById('manualInputSection').style.display = 'none';
+            document.getElementById('rawInputSection').style.display = 'none';
+            document.getElementById('answerSelectionSection').style.display = 'none';
+            document.getElementById('quizSection').style.display = 'none'; // Ensure quiz is hidden when going back to main
+        }
+
+        function showManualInput() {
+            document.getElementById('mainInputSelection').style.display = 'none';
+            document.getElementById('manualInputSection').style.display = 'block';
+            document.getElementById('rawInputSection').style.display = 'none';
+            document.getElementById('answerSelectionSection').style.display = 'none';
+            document.getElementById('quizSection').style.display = 'none';
+        }
+
+        function showRawInput() {
+            document.getElementById('mainInputSelection').style.display = 'none';
+            document.getElementById('manualInputSection').style.display = 'none';
+            document.getElementById('rawInputSection').style.display = 'block';
+            document.getElementById('answerSelectionSection').style.display = 'none';
+            document.getElementById('quizSection').style.display = 'none';
+        }
+
+        function showAnswerSelection() {
+            document.getElementById('mainInputSelection').style.display = 'none';
+            document.getElementById('manualInputSection').style.display = 'none';
+            document.getElementById('rawInputSection').style.display = 'none';
+            document.getElementById('answerSelectionSection').style.display = 'block';
+            document.getElementById('quizSection').style.display = 'none';
+        }
+
+        function startQuizDisplay() {
+            document.getElementById('mainInputSelection').style.display = 'none';
+            document.getElementById('manualInputSection').style.display = 'none';
+            document.getElementById('rawInputSection').style.display = 'none';
+            document.getElementById('answerSelectionSection').style.display = 'none';
+            document.getElementById('quizSection').style.display = 'block';
+        }
+
+        function backToMainSelection() {
+            showMainSelection();
+            // Reset quiz state when going back to main selection
+            currentQuestionIndex = 0;
+            shuffledQuestionIndices = [];
+            document.getElementById('quizContainer').style.display = 'block'; // Ensure quiz container is visible for next quiz
+            document.getElementById('quizCompleteMessage').style.display = 'none'; // Hide completion message
+        }
+
+        function backToRawInput() {
+            showRawInput();
+            // Re-populate textarea with current rawQuestions data if needed
+            document.getElementById('rawQuestionInput').value = rawQuestions.map(q => {
+                let text = q.question + '\n';
+                text += q.answers.join('\n');
+                return text;
+            }).join('\n\n');
+        }
+
+        // --- Option 1: Save Questions from Manual Input (Original function, renamed) ---
+        function saveQuestionsFromManual() {
+            const input = document.getElementById('questionInput').value;
+            const lines = input.split('\n').filter(line => line.trim() !== '');
+            questions = [];
+            let currentQuestion = null;
+
+            lines.forEach(line => {
+                if (line.trim().length === 0) return; // Skip truly empty lines
+
+                // New question starts when line doesn't start with '-' or '+'
+                if (!line.startsWith('-') && !line.startsWith('+')) {
+                    if (currentQuestion) {
+                        // Validate previous question before pushing
+                        if (currentQuestion.answers.length > 0 && currentQuestion.correctAnswer) {
+                            questions.push(currentQuestion);
+                        } else {
+                            console.warn('Bỏ qua câu hỏi không hợp lệ (thiếu đáp án hoặc đáp án đúng):', currentQuestion.question);
+                        }
+                    }
+                    currentQuestion = {
+                        question: line.trim(),
+                        answers: [],
+                        correctAnswer: ''
+                    };
+                } else if (currentQuestion) { // This is an "answer" line
+                    const answerText = line.substring(1).trim();
+                    const isCorrect = line.startsWith('+');
+                    currentQuestion.answers.push(answerText);
+                    if (isCorrect) {
+                        currentQuestion.correctAnswer = answerText;
+                    }
+                }
+            });
+
+            // Push the last question if it's valid
+            if (currentQuestion && currentQuestion.answers.length > 0 && currentQuestion.correctAnswer) {
+                questions.push(currentQuestion);
+            } else if (currentQuestion) {
+                    console.warn('Bỏ qua câu hỏi cuối cùng không hợp lệ (thiếu đáp án hoặc đáp án đúng):', currentQuestion.question);
+            }
+
+
+            if (questions.length > 0) {
+                startQuizDisplay();
+                shuffleQuestions();
+                loadQuestion();
+            } else {
+                alert('Vui lòng nhập câu hỏi theo định dạng đã cho và đảm bảo có ít nhất một câu hỏi hợp lệ.');
+            }
+        }
+
+        // --- Option 2: Process Raw Questions (New) ---
+        function processRawQuestions() {
+            const rawInput = document.getElementById('rawQuestionInput').value;
+            const lines = rawInput.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+            rawQuestions = []; // Reset rawQuestions array
+            let currentRawQuestion = null;
+
+            lines.forEach(line => {
+                // Heuristic: If line doesn't start with a common answer prefix (like A., B., - , +)
+                // assume it's a new question. This is simplified; real-world parsing might need regex.
+                if (!/^[A-Da-d]\.?\s/.test(line) && !line.startsWith('-') && !line.startsWith('+')) {
+                    if (currentRawQuestion && currentRawQuestion.answers.length > 0) {
+                        rawQuestions.push(currentRawQuestion);
+                    }
+                    currentRawQuestion = {
+                        question: line,
+                        answers: [],
+                        correctAnswer: '' // To be filled in selection step
+                    };
+                } else if (currentRawQuestion) {
+                    currentRawQuestion.answers.push(line);
+                }
+            });
+
+            // Push the last raw question if it's valid
+            if (currentRawQuestion && currentRawQuestion.answers.length > 0) {
+                rawQuestions.push(currentRawQuestion);
+            }
+
+            if (rawQuestions.length > 0) {
+                displayQuestionsForSelection();
+                showAnswerSelection();
+            } else {
+                alert('Không tìm thấy câu hỏi nào trong dữ liệu thô. Vui lòng kiểm tra định dạng nhập liệu.');
+            }
+        }
+
+        // --- Display Questions for Answer Selection (New) ---
+        function displayQuestionsForSelection() {
+            const container = document.getElementById('questionsForSelection');
+            container.innerHTML = ''; // Clear previous content
+
+            if (rawQuestions.length === 0) {
+                container.textContent = 'Không có câu hỏi nào để chọn đáp án.';
+                return;
+            }
+
+            rawQuestions.forEach((qData, qIndex) => {
+                const qItem = document.createElement('div');
+                qItem.classList.add('raw-question-item');
+
+                const qText = document.createElement('p');
+                qText.textContent = `Câu hỏi ${qIndex + 1}: ${qData.question}`;
+                qItem.appendChild(qText);
+
+                const answersDiv = document.createElement('div');
+                answersDiv.classList.add('raw-answers');
+
+                qData.answers.forEach((answer, aIndex) => {
+                    const button = document.createElement('button');
+                    button.textContent = answer;
+                    button.dataset.qIndex = qIndex;
+                    button.dataset.aIndex = aIndex;
+
+                    // Set initial selected state if coming back from this view
+                    if (qData.correctAnswer === answer) {
+                        button.classList.add('selected-correct');
+                    }
+
+                    button.onclick = function() {
+                        // Remove 'selected-correct' from other buttons in this question
+                        const siblings = this.parentNode.querySelectorAll('button');
+                        siblings.forEach(btn => btn.classList.remove('selected-correct'));
+
+                        // Add 'selected-correct' to the clicked button
+                        this.classList.add('selected-correct');
+
+                        // Update the rawQuestions array's correct answer for this question
+                        rawQuestions[qIndex].correctAnswer = answer;
+                    };
+                    answersDiv.appendChild(button);
+                });
+                qItem.appendChild(answersDiv);
+                container.appendChild(qItem);
+            });
+        }
+
+        // --- Export to Word and Start Quiz (New) ---
+        async function exportAndStartQuiz() {
+            // First, validate if all questions have a correct answer selected
+            const incompleteQuestions = rawQuestions.filter(q => !q.correctAnswer);
+            if (incompleteQuestions.length > 0) {
+                alert(`Vui lòng chọn đáp án đúng cho tất cả ${incompleteQuestions.length} câu hỏi chưa được chọn.`);
+                return;
+            }
+
+            // Prepare questions for the main quiz array (questions) and for Word export
+            questions = []; // Reset the main quiz questions array
+            let wordContent = '';
+
+            rawQuestions.forEach((qData, qIndex) => {
+                // Add to quiz questions array
+                questions.push({
+                    question: qData.question,
+                    answers: qData.answers,
+                    correctAnswer: qData.correctAnswer
+                });
+
+                // Prepare content for Word export (as plain text with +/-, then save as .txt)
+                wordContent += `Câu hỏi ${qIndex + 1}: ${qData.question}\n`;
+                qData.answers.forEach(answer => {
+                    if (answer === qData.correctAnswer) {
+                        wordContent += `+${answer}\n`; // Correct answer with '+'
+                    } else {
+                        wordContent += `-${answer}\n`; // Wrong answer with '-'
+                    }
+                });
+                wordContent += '\n'; // Extra line break between questions in Word
+            });
+
+            // Export to Word (as a .txt file that Word can open)
+            try {
+                // We use Blob and FileSaver.js to save the string content as a .txt file.
+                // Docxtemplater is typically for .docx templates, which is more complex for raw text.
+                const blob = new Blob([wordContent], { type: 'text/plain;charset=utf-8' });
+                saveAs(blob, `cau_hoi_trac_nghiem_${new Date().toLocaleDateString('vi-VN').replace(/\//g, '-')}.txt`); // Filename with current date
+
+                alert('File câu hỏi định dạng đã được tạo và tải xuống (.txt).');
+
+            } catch (error) {
+                console.error("Lỗi khi xuất file Word:", error);
+                alert("Đã xảy ra lỗi khi xuất file Word. Vui lòng kiểm tra console để biết chi tiết.");
+            }
+
+            // Start the quiz with the now formatted questions
+            if (questions.length > 0) {
+                startQuizDisplay();
+                shuffleQuestions();
+                loadQuestion();
+            } else {
+                alert('Không có câu hỏi nào để bắt đầu trắc nghiệm.');
+            }
+        }
+
+
+        // --- Quiz Logic (Original, with minor safety checks) ---
+
+        function shuffleQuestions() {
+            shuffledQuestionIndices = Array.from({ length: questions.length }, (_, i) => i);
+            for (let i = shuffledQuestionIndices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledQuestionIndices[i], shuffledQuestionIndices[j]] = [shuffledQuestionIndices[j], shuffledQuestionIndices[i]];
+            }
+            currentQuestionIndex = 0;
+        }
+
+        function loadQuestion() {
+            const questionContainer = document.getElementById('currentQuestion');
+            const answerButtonsContainer = document.getElementById('answerButtons');
+            const resultDiv = document.getElementById('result');
+            const nextButton = document.getElementById('nextQuestionBtn');
+            const quizCompleteMessage = document.getElementById('quizCompleteMessage');
+
+            resultDiv.textContent = '';
+            resultDiv.className = ''; // Clear previous classes
+            nextButton.style.display = 'none';
+            quizCompleteMessage.style.display = 'none';
+            document.getElementById('quizContainer').style.display = 'block'; // Ensure quiz container is visible
+
+            if (currentQuestionIndex >= shuffledQuestionIndices.length) {
+                document.getElementById('quizContainer').style.display = 'none';
+                quizCompleteMessage.style.display = 'block';
+                return;
+            }
+
+            const questionData = questions[shuffledQuestionIndices[currentQuestionIndex]];
+            if (!questionData) { // Safety check in case of bad index
+                console.error("Lỗi: Không tìm thấy dữ liệu câu hỏi cho chỉ mục:", shuffledQuestionIndices[currentQuestionIndex]);
+                currentQuestionIndex++; // Try to move to the next
+                loadQuestion();
+                return;
+            }
+
+            questionContainer.textContent = questionData.question;
+            answerButtonsContainer.innerHTML = '';
+
+            // Shuffle answers for the current question
+            const shuffledAnswers = [...questionData.answers];
+            for (let i = shuffledAnswers.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledAnswers[i], shuffledAnswers[j]] = [shuffledAnswers[j], shuffledAnswers[i]];
+            }
+
+            shuffledAnswers.forEach(answer => {
+                const button = document.createElement('button');
+                button.textContent = answer;
+                button.onclick = () => checkAnswer(button, answer, questionData.correctAnswer);
+                answerButtonsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedButton, selectedAnswer, correctAnswer) {
+            const answerButtons = document.querySelectorAll('#answerButtons button');
+            const resultDiv = document.getElementById('result');
+            const nextButton = document.getElementById('nextQuestionBtn');
+
+            // Disable all answer buttons after one is clicked
+            answerButtons.forEach(button => {
+                button.disabled = true;
+            });
+
+            if (selectedAnswer === correctAnswer) {
+                selectedButton.classList.add('correct');
+                resultDiv.textContent = 'Đúng rồi!';
+                resultDiv.classList.add('correct-feedback');
+            } else {
+                selectedButton.classList.add('wrong');
+                resultDiv.textContent = 'Sai rồi. Đáp án đúng là: ' + correctAnswer;
+                resultDiv.classList.add('wrong-feedback');
+                // Highlight the correct answer
+                answerButtons.forEach(button => {
+                    if (button.textContent === correctAnswer) {
+                        button.classList.add('correct');
+                    }
+                });
+            }
+            nextButton.style.display = 'block'; // Show "Next" button
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        // Initialize view on load
+        document.addEventListener('DOMContentLoaded', showMainSelection);
+
+    </script>
+</body>
+</html>
