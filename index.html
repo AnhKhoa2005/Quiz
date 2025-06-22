@@ -303,7 +303,7 @@ Câu hỏi 2
         let currentQuestionIndex = 0;
         let shuffledQuestionIndices = [];
         let score = 0;
-        let incorrectlyAnsweredQuestions = []; // New: Stores questions answered incorrectly
+        let incorrectlyAnsweredQuestions = []; // New: Stores full question objects answered incorrectly
 
         // --- View Management ---
         function showMainSelection() {
@@ -512,6 +512,7 @@ Câu hỏi 2
             let wordContent = '';
 
             rawQuestions.forEach((qData, qIndex) => {
+                // Store the full question object for the quiz
                 questions.push({
                     question: qData.question,
                     answers: qData.answers,
@@ -602,9 +603,9 @@ Câu hỏi 2
                     });
                     retakeWrongBtn.style.display = 'block'; // Show retake button if there are wrong answers
                 } else {
-                     const p = document.createElement('p');
-                     p.textContent = 'Tuyệt vời! Bạn đã trả lời đúng tất cả các câu hỏi.';
-                     incorrectAnswersListDiv.appendChild(p);
+                    const p = document.createElement('p');
+                    p.textContent = 'Tuyệt vời! Bạn đã trả lời đúng tất cả các câu hỏi.';
+                    incorrectAnswersListDiv.appendChild(p);
                 }
 
 
@@ -654,12 +655,8 @@ Câu hỏi 2
                 selectedButton.classList.add('wrong');
                 resultDiv.textContent = 'Sai rồi. Đáp án đúng là: ' + questionData.correctAnswer;
                 resultDiv.classList.add('wrong-feedback');
-                // Store incorrect question details
-                incorrectlyAnsweredQuestions.push({
-                    question: questionData.question,
-                    yourAnswer: selectedAnswer,
-                    correctAnswer: questionData.correctAnswer
-                });
+                // Store the original question object for retake
+                incorrectlyAnsweredQuestions.push(questionData);
 
                 answerButtons.forEach(button => {
                     if (button.textContent === questionData.correctAnswer) {
@@ -683,7 +680,8 @@ Câu hỏi 2
             }
 
             // Set the main 'questions' array to only the ones answered incorrectly
-            questions = [...incorrectlyAnsweredQuestions]; // Create a copy
+            // Now, incorrectlyAnsweredQuestions already holds the full question objects
+            questions = [...incorrectlyAnsweredQuestions]; 
             incorrectlyAnsweredQuestions = []; // Clear for the new session
 
             score = 0; // Reset score for the retake
