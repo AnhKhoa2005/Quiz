@@ -256,6 +256,7 @@ Câu hỏi 2
             <button id="nextQuestionBtn" onclick="nextQuestion()">Tiếp theo</button>
             <div id="quizCompleteMessage">
                 <p>Chúc mừng! Bạn đã hoàn thành tất cả các câu hỏi.</p>
+                <p id="finalScore"></p>
                 <button onclick="backToMainSelection()">Quay lại</button>
             </div>
         </div>
@@ -266,6 +267,7 @@ Câu hỏi 2
         let rawQuestions = []; // Stores unformatted questions temporarily for selection
         let currentQuestionIndex = 0;
         let shuffledQuestionIndices = [];
+        let score = 0; // New: Initialize score
 
         // --- View Management ---
         function showMainSelection() {
@@ -274,6 +276,7 @@ Câu hỏi 2
             document.getElementById('rawInputSection').style.display = 'none';
             document.getElementById('answerSelectionSection').style.display = 'none';
             document.getElementById('quizSection').style.display = 'none'; // Ensure quiz is hidden when going back to main
+            score = 0; // Reset score when going back to main selection
         }
 
         function showManualInput() {
@@ -315,6 +318,7 @@ Câu hỏi 2
             shuffledQuestionIndices = [];
             document.getElementById('quizContainer').style.display = 'block'; // Ensure quiz container is visible for next quiz
             document.getElementById('quizCompleteMessage').style.display = 'none'; // Hide completion message
+            score = 0; // Ensure score is reset
         }
 
         function backToRawInput() {
@@ -533,6 +537,7 @@ Câu hỏi 2
                 [shuffledQuestionIndices[i], shuffledQuestionIndices[j]] = [shuffledQuestionIndices[j], shuffledQuestionIndices[i]];
             }
             currentQuestionIndex = 0;
+            score = 0; // Reset score for a new quiz session
         }
 
         function loadQuestion() {
@@ -541,6 +546,7 @@ Câu hỏi 2
             const resultDiv = document.getElementById('result');
             const nextButton = document.getElementById('nextQuestionBtn');
             const quizCompleteMessage = document.getElementById('quizCompleteMessage');
+            const finalScoreDisplay = document.getElementById('finalScore'); // New element for score
 
             resultDiv.textContent = '';
             resultDiv.className = ''; // Clear previous classes
@@ -551,6 +557,7 @@ Câu hỏi 2
             if (currentQuestionIndex >= shuffledQuestionIndices.length) {
                 document.getElementById('quizContainer').style.display = 'none';
                 quizCompleteMessage.style.display = 'block';
+                finalScoreDisplay.textContent = `Bạn đã trả lời đúng ${score} trên ${questions.length} câu hỏi.`; // Display final score
                 return;
             }
 
@@ -594,6 +601,7 @@ Câu hỏi 2
                 selectedButton.classList.add('correct');
                 resultDiv.textContent = 'Đúng rồi!';
                 resultDiv.classList.add('correct-feedback');
+                score++; // New: Increment score if correct
             } else {
                 selectedButton.classList.add('wrong');
                 resultDiv.textContent = 'Sai rồi. Đáp án đúng là: ' + correctAnswer;
