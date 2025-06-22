@@ -140,10 +140,43 @@
         }
         #quizCompleteMessage {
             text-align: center;
-            font-size: 1.5em;
+            font-size: 1.2em; /* Adjusted font size */
             color: #007bff;
             margin-top: 30px;
             display: none;
+            padding: 20px;
+            border: 1px solid #b3d7ff;
+            background-color: #e0f2ff;
+            border-radius: 8px;
+        }
+        #quizCompleteMessage p {
+            margin-bottom: 10px;
+        }
+        #quizCompleteMessage button {
+            margin-top: 15px;
+        }
+        #retakeWrongBtn {
+            background-color: #ffc107; /* Orange for retake button */
+            color: #343a40;
+        }
+        #retakeWrongBtn:hover {
+            background-color: #e0a800;
+        }
+        #incorrectAnswersList {
+            text-align: left;
+            margin-top: 20px;
+            border-top: 1px dashed #a3c9e6;
+            padding-top: 15px;
+        }
+        .incorrect-item {
+            background-color: #ffebe6;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ffc2b3;
+        }
+        .incorrect-item strong {
+            color: #dc3545;
         }
         /* Styles for Raw Input and Answer Selection */
         #rawInputSection, #answerSelectionSection {
@@ -238,7 +271,7 @@ Câu hỏi 2
         <div id="answerSelectionSection" style="display: none;">
             <h2>Chọn Đáp Án Đúng</h2>
             <div id="questionsForSelection">
-                </div>
+            </div>
             <button id="exportWordBtn" onclick="exportAndStartQuiz()">Xuất Word & Bắt đầu Trắc nghiệm</button>
             <button onclick="backToRawInput()">Quay lại</button>
         </div>
@@ -249,7 +282,7 @@ Câu hỏi 2
                 <div class="question-container">
                     <p class="question" id="currentQuestion"></p>
                     <div class="answers" id="answerButtons">
-                        </div>
+                    </div>
                 </div>
             </div>
             <div id="result"></div>
@@ -257,7 +290,9 @@ Câu hỏi 2
             <div id="quizCompleteMessage">
                 <p>Chúc mừng! Bạn đã hoàn thành tất cả các câu hỏi.</p>
                 <p id="finalScore"></p>
-                <button onclick="backToMainSelection()">Quay lại</button>
+                <div id="incorrectAnswersList"></div>
+                <button id="retakeWrongBtn" onclick="retakeWrongQuestions()" style="display: none;">Làm lại các câu sai</button>
+                <button onclick="backToMainSelection()">Quay lại màn hình chính</button>
             </div>
         </div>
     </div>
@@ -267,7 +302,8 @@ Câu hỏi 2
         let rawQuestions = []; // Stores unformatted questions temporarily for selection
         let currentQuestionIndex = 0;
         let shuffledQuestionIndices = [];
-        let score = 0; // New: Initialize score
+        let score = 0;
+        let incorrectlyAnsweredQuestions = []; // New: Stores questions answered incorrectly
 
         // --- View Management ---
         function showMainSelection() {
@@ -275,8 +311,11 @@ Câu hỏi 2
             document.getElementById('manualInputSection').style.display = 'none';
             document.getElementById('rawInputSection').style.display = 'none';
             document.getElementById('answerSelectionSection').style.display = 'none';
-            document.getElementById('quizSection').style.display = 'none'; // Ensure quiz is hidden when going back to main
-            score = 0; // Reset score when going back to main selection
+            document.getElementById('quizSection').style.display = 'none';
+            score = 0; // Reset score
+            incorrectlyAnsweredQuestions = []; // Reset incorrect questions
+            document.getElementById('questionInput').value = ''; // Clear input fields
+            document.getElementById('rawQuestionInput').value = '';
         }
 
         function showManualInput() {
@@ -313,12 +352,12 @@ Câu hỏi 2
 
         function backToMainSelection() {
             showMainSelection();
-            // Reset quiz state when going back to main selection
             currentQuestionIndex = 0;
             shuffledQuestionIndices = [];
-            document.getElementById('quizContainer').style.display = 'block'; // Ensure quiz container is visible for next quiz
-            document.getElementById('quizCompleteMessage').style.display = 'none'; // Hide completion message
-            score = 0; // Ensure score is reset
+            document.getElementById('quizContainer').style.display = 'block';
+            document.getElementById('quizCompleteMessage').style.display = 'none';
+            document.getElementById('retakeWrongBtn').style.display = 'none'; // Hide retake button
+            document.getElementById('incorrectAnswersList').innerHTML = ''; // Clear previous list
         }
 
         function backToRawInput() {
@@ -331,7 +370,7 @@ Câu hỏi 2
             }).join('\n\n');
         }
 
-        // --- Option 1: Save Questions from Manual Input (Original function, renamed) ---
+        // --- Option 1: Save Questions from Manual Input ---
         function saveQuestionsFromManual() {
             const input = document.getElementById('questionInput').value;
             const lines = input.split('\n').filter(line => line.trim() !== '');
@@ -339,12 +378,10 @@ Câu hỏi 2
             let currentQuestion = null;
 
             lines.forEach(line => {
-                if (line.trim().length === 0) return; // Skip truly empty lines
+                if (line.trim().length === 0) return;
 
-                // New question starts when line doesn't start with '-' or '+'
                 if (!line.startsWith('-') && !line.startsWith('+')) {
                     if (currentQuestion) {
-                        // Validate previous question before pushing
                         if (currentQuestion.answers.length > 0 && currentQuestion.correctAnswer) {
                             questions.push(currentQuestion);
                         } else {
@@ -356,7 +393,7 @@ Câu hỏi 2
                         answers: [],
                         correctAnswer: ''
                     };
-                } else if (currentQuestion) { // This is an "answer" line
+                } else if (currentQuestion) {
                     const answerText = line.substring(1).trim();
                     const isCorrect = line.startsWith('+');
                     currentQuestion.answers.push(answerText);
@@ -366,13 +403,11 @@ Câu hỏi 2
                 }
             });
 
-            // Push the last question if it's valid
             if (currentQuestion && currentQuestion.answers.length > 0 && currentQuestion.correctAnswer) {
                 questions.push(currentQuestion);
             } else if (currentQuestion) {
-                    console.warn('Bỏ qua câu hỏi cuối cùng không hợp lệ (thiếu đáp án hoặc đáp án đúng):', currentQuestion.question);
+                console.warn('Bỏ qua câu hỏi cuối cùng không hợp lệ (thiếu đáp án hoặc đáp án đúng):', currentQuestion.question);
             }
-
 
             if (questions.length > 0) {
                 startQuizDisplay();
@@ -383,31 +418,32 @@ Câu hỏi 2
             }
         }
 
-        // --- Option 2: Process Raw Questions (New) ---
+        // --- Option 2: Process Raw Questions ---
         function processRawQuestions() {
             const rawInput = document.getElementById('rawQuestionInput').value;
             const lines = rawInput.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-            rawQuestions = []; // Reset rawQuestions array
+            rawQuestions = [];
             let currentRawQuestion = null;
 
             lines.forEach(line => {
-                // Heuristic: If line doesn't start with a common answer prefix (like A., B., - , +)
-                // assume it's a new question. This is simplified; real-world parsing might need regex.
-                if (!/^[A-Da-d]\.?\s/.test(line) && !line.startsWith('-') && !line.startsWith('+')) {
+                // Improved heuristic for new questions: check for common answer prefixes (A., B., 1., 2.)
+                // and also if it seems like a new numbered question (e.g., "Câu hỏi 1", "Question 1")
+                const isAnswerLine = /^[A-Da-d][.)]?\s|^[0-9]+\.[ ]+/.test(line) || line.startsWith('-') || line.startsWith('+');
+                
+                if (!isAnswerLine) { // It's likely a new question
                     if (currentRawQuestion && currentRawQuestion.answers.length > 0) {
                         rawQuestions.push(currentRawQuestion);
                     }
                     currentRawQuestion = {
                         question: line,
                         answers: [],
-                        correctAnswer: '' // To be filled in selection step
+                        correctAnswer: ''
                     };
                 } else if (currentRawQuestion) {
                     currentRawQuestion.answers.push(line);
                 }
             });
 
-            // Push the last raw question if it's valid
             if (currentRawQuestion && currentRawQuestion.answers.length > 0) {
                 rawQuestions.push(currentRawQuestion);
             }
@@ -420,10 +456,10 @@ Câu hỏi 2
             }
         }
 
-        // --- Display Questions for Answer Selection (New) ---
+        // --- Display Questions for Answer Selection ---
         function displayQuestionsForSelection() {
             const container = document.getElementById('questionsForSelection');
-            container.innerHTML = ''; // Clear previous content
+            container.innerHTML = '';
 
             if (rawQuestions.length === 0) {
                 container.textContent = 'Không có câu hỏi nào để chọn đáp án.';
@@ -447,20 +483,14 @@ Câu hỏi 2
                     button.dataset.qIndex = qIndex;
                     button.dataset.aIndex = aIndex;
 
-                    // Set initial selected state if coming back from this view
                     if (qData.correctAnswer === answer) {
                         button.classList.add('selected-correct');
                     }
 
                     button.onclick = function() {
-                        // Remove 'selected-correct' from other buttons in this question
                         const siblings = this.parentNode.querySelectorAll('button');
                         siblings.forEach(btn => btn.classList.remove('selected-correct'));
-
-                        // Add 'selected-correct' to the clicked button
                         this.classList.add('selected-correct');
-
-                        // Update the rawQuestions array's correct answer for this question
                         rawQuestions[qIndex].correctAnswer = answer;
                     };
                     answersDiv.appendChild(button);
@@ -470,54 +500,44 @@ Câu hỏi 2
             });
         }
 
-        // --- Export to Word and Start Quiz (New) ---
+        // --- Export to Word and Start Quiz ---
         async function exportAndStartQuiz() {
-            // First, validate if all questions have a correct answer selected
             const incompleteQuestions = rawQuestions.filter(q => !q.correctAnswer);
             if (incompleteQuestions.length > 0) {
                 alert(`Vui lòng chọn đáp án đúng cho tất cả ${incompleteQuestions.length} câu hỏi chưa được chọn.`);
                 return;
             }
 
-            // Prepare questions for the main quiz array (questions) and for Word export
-            questions = []; // Reset the main quiz questions array
+            questions = [];
             let wordContent = '';
 
             rawQuestions.forEach((qData, qIndex) => {
-                // Add to quiz questions array
                 questions.push({
                     question: qData.question,
                     answers: qData.answers,
                     correctAnswer: qData.correctAnswer
                 });
 
-                // Prepare content for Word export (as plain text with +/-, then save as .txt)
                 wordContent += `Câu hỏi ${qIndex + 1}: ${qData.question}\n`;
                 qData.answers.forEach(answer => {
                     if (answer === qData.correctAnswer) {
-                        wordContent += `+${answer}\n`; // Correct answer with '+'
+                        wordContent += `+${answer}\n`;
                     } else {
-                        wordContent += `-${answer}\n`; // Wrong answer with '-'
+                        wordContent += `-${answer}\n`;
                     }
                 });
-                wordContent += '\n'; // Extra line break between questions in Word
+                wordContent += '\n';
             });
 
-            // Export to Word (as a .txt file that Word can open)
             try {
-                // We use Blob and FileSaver.js to save the string content as a .txt file.
-                // Docxtemplater is typically for .docx templates, which is more complex for raw text.
                 const blob = new Blob([wordContent], { type: 'text/plain;charset=utf-8' });
-                saveAs(blob, `cau_hoi_trac_nghiem_${new Date().toLocaleDateString('vi-VN').replace(/\//g, '-')}.txt`); // Filename with current date
-
-                alert('File câu hỏi định dạng đã được tạo và tải xuống (.txt).');
-
+                saveAs(blob, `cau_hoi_trac_nghiem_${new Date().toLocaleDateString('vi-VN').replace(/\//g, '-')}.txt`);
+                alert('File câu hỏi định dạng đã được tạo và tải xuống (.txt). Bạn có thể mở nó bằng Word.');
             } catch (error) {
-                console.error("Lỗi khi xuất file Word:", error);
-                alert("Đã xảy ra lỗi khi xuất file Word. Vui lòng kiểm tra console để biết chi tiết.");
+                console.error("Lỗi khi xuất file:", error);
+                alert("Đã xảy ra lỗi khi xuất file. Vui lòng kiểm tra console để biết chi tiết.");
             }
 
-            // Start the quiz with the now formatted questions
             if (questions.length > 0) {
                 startQuizDisplay();
                 shuffleQuestions();
@@ -528,7 +548,7 @@ Câu hỏi 2
         }
 
 
-        // --- Quiz Logic (Original, with minor safety checks) ---
+        // --- Quiz Logic ---
 
         function shuffleQuestions() {
             shuffledQuestionIndices = Array.from({ length: questions.length }, (_, i) => i);
@@ -537,7 +557,8 @@ Câu hỏi 2
                 [shuffledQuestionIndices[i], shuffledQuestionIndices[j]] = [shuffledQuestionIndices[j], shuffledQuestionIndices[i]];
             }
             currentQuestionIndex = 0;
-            score = 0; // Reset score for a new quiz session
+            // score is reset at the start of a new quiz session or when returning to main selection
+            // incorrectlyAnsweredQuestions is reset at the start of a new quiz session or when returning to main selection
         }
 
         function loadQuestion() {
@@ -546,25 +567,54 @@ Câu hỏi 2
             const resultDiv = document.getElementById('result');
             const nextButton = document.getElementById('nextQuestionBtn');
             const quizCompleteMessage = document.getElementById('quizCompleteMessage');
-            const finalScoreDisplay = document.getElementById('finalScore'); // New element for score
+            const finalScoreDisplay = document.getElementById('finalScore');
+            const incorrectAnswersListDiv = document.getElementById('incorrectAnswersList');
+            const retakeWrongBtn = document.getElementById('retakeWrongBtn');
 
             resultDiv.textContent = '';
-            resultDiv.className = ''; // Clear previous classes
+            resultDiv.className = '';
             nextButton.style.display = 'none';
             quizCompleteMessage.style.display = 'none';
-            document.getElementById('quizContainer').style.display = 'block'; // Ensure quiz container is visible
+            document.getElementById('quizContainer').style.display = 'block';
+            incorrectAnswersListDiv.innerHTML = ''; // Clear previous list of incorrect answers
+            retakeWrongBtn.style.display = 'none'; // Hide retake button by default
 
             if (currentQuestionIndex >= shuffledQuestionIndices.length) {
                 document.getElementById('quizContainer').style.display = 'none';
                 quizCompleteMessage.style.display = 'block';
-                finalScoreDisplay.textContent = `Bạn đã trả lời đúng ${score} trên ${questions.length} câu hỏi.`; // Display final score
+                finalScoreDisplay.textContent = `Bạn đã trả lời đúng ${score} trên ${questions.length} câu hỏi.`;
+
+                // Display incorrectly answered questions
+                if (incorrectlyAnsweredQuestions.length > 0) {
+                    const listTitle = document.createElement('h3');
+                    listTitle.textContent = 'Các câu bạn đã trả lời sai:';
+                    incorrectAnswersListDiv.appendChild(listTitle);
+
+                    incorrectlyAnsweredQuestions.forEach((item, index) => {
+                        const p = document.createElement('div');
+                        p.classList.add('incorrect-item');
+                        p.innerHTML = `
+                            <p><strong>Câu ${index + 1}:</strong> ${item.question}</p>
+                            <p><strong>Đáp án của bạn:</strong> ${item.yourAnswer}</p>
+                            <p><strong>Đáp án đúng:</strong> ${item.correctAnswer}</p>
+                        `;
+                        incorrectAnswersListDiv.appendChild(p);
+                    });
+                    retakeWrongBtn.style.display = 'block'; // Show retake button if there are wrong answers
+                } else {
+                     const p = document.createElement('p');
+                     p.textContent = 'Tuyệt vời! Bạn đã trả lời đúng tất cả các câu hỏi.';
+                     incorrectAnswersListDiv.appendChild(p);
+                }
+
+
                 return;
             }
 
             const questionData = questions[shuffledQuestionIndices[currentQuestionIndex]];
-            if (!questionData) { // Safety check in case of bad index
+            if (!questionData) {
                 console.error("Lỗi: Không tìm thấy dữ liệu câu hỏi cho chỉ mục:", shuffledQuestionIndices[currentQuestionIndex]);
-                currentQuestionIndex++; // Try to move to the next
+                currentQuestionIndex++;
                 loadQuestion();
                 return;
             }
@@ -572,7 +622,6 @@ Câu hỏi 2
             questionContainer.textContent = questionData.question;
             answerButtonsContainer.innerHTML = '';
 
-            // Shuffle answers for the current question
             const shuffledAnswers = [...questionData.answers];
             for (let i = shuffledAnswers.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -582,38 +631,43 @@ Câu hỏi 2
             shuffledAnswers.forEach(answer => {
                 const button = document.createElement('button');
                 button.textContent = answer;
-                button.onclick = () => checkAnswer(button, answer, questionData.correctAnswer);
+                button.onclick = () => checkAnswer(button, answer, questionData); // Pass full questionData
                 answerButtonsContainer.appendChild(button);
             });
         }
 
-        function checkAnswer(selectedButton, selectedAnswer, correctAnswer) {
+        function checkAnswer(selectedButton, selectedAnswer, questionData) {
             const answerButtons = document.querySelectorAll('#answerButtons button');
             const resultDiv = document.getElementById('result');
             const nextButton = document.getElementById('nextQuestionBtn');
 
-            // Disable all answer buttons after one is clicked
             answerButtons.forEach(button => {
                 button.disabled = true;
             });
 
-            if (selectedAnswer === correctAnswer) {
+            if (selectedAnswer === questionData.correctAnswer) {
                 selectedButton.classList.add('correct');
                 resultDiv.textContent = 'Đúng rồi!';
                 resultDiv.classList.add('correct-feedback');
-                score++; // New: Increment score if correct
+                score++;
             } else {
                 selectedButton.classList.add('wrong');
-                resultDiv.textContent = 'Sai rồi. Đáp án đúng là: ' + correctAnswer;
+                resultDiv.textContent = 'Sai rồi. Đáp án đúng là: ' + questionData.correctAnswer;
                 resultDiv.classList.add('wrong-feedback');
-                // Highlight the correct answer
+                // Store incorrect question details
+                incorrectlyAnsweredQuestions.push({
+                    question: questionData.question,
+                    yourAnswer: selectedAnswer,
+                    correctAnswer: questionData.correctAnswer
+                });
+
                 answerButtons.forEach(button => {
-                    if (button.textContent === correctAnswer) {
+                    if (button.textContent === questionData.correctAnswer) {
                         button.classList.add('correct');
                     }
                 });
             }
-            nextButton.style.display = 'block'; // Show "Next" button
+            nextButton.style.display = 'block';
         }
 
         function nextQuestion() {
@@ -621,9 +675,28 @@ Câu hỏi 2
             loadQuestion();
         }
 
-        // Initialize view on load
-        document.addEventListener('DOMContentLoaded', showMainSelection);
+        // New: Function to retake only incorrectly answered questions
+        function retakeWrongQuestions() {
+            if (incorrectlyAnsweredQuestions.length === 0) {
+                alert('Không có câu hỏi sai để làm lại!');
+                return;
+            }
 
+            // Set the main 'questions' array to only the ones answered incorrectly
+            questions = [...incorrectlyAnsweredQuestions]; // Create a copy
+            incorrectlyAnsweredQuestions = []; // Clear for the new session
+
+            score = 0; // Reset score for the retake
+            document.getElementById('quizCompleteMessage').style.display = 'none'; // Hide completion message
+            document.getElementById('incorrectAnswersList').innerHTML = ''; // Clear previous list
+            document.getElementById('retakeWrongBtn').style.display = 'none'; // Hide retake button
+
+            // Start the quiz again with the new set of questions
+            shuffleQuestions();
+            loadQuestion();
+        }
+
+        document.addEventListener('DOMContentLoaded', showMainSelection);
     </script>
 </body>
 </html>
