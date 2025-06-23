@@ -29,462 +29,952 @@
             margin-bottom: 20px;
         }
         textarea {
-            width: 98%;
-            height: 200px;
-            margin-bottom: 15px;
+            width: 97%;
+            height: 150px;
             padding: 10px;
+            margin-bottom: 15px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            font-size: 16px;
+            font-size: 1em;
             resize: vertical;
         }
         button {
-            padding: 12px 25px;
             background-color: #007bff;
             color: white;
+            padding: 10px 15px;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 16px;
-            display: block;
-            margin: 0 auto 10px auto; /* Reduced margin */
-            transition: background-color 0.3s ease;
+            font-size: 1em;
+            margin-right: 10px;
+            transition: background-color 0.2s;
         }
         button:hover {
             background-color: #0056b3;
         }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
         .button-group {
-            display: flex;
-            justify-content: space-around;
+            text-align: center;
             margin-bottom: 20px;
         }
-        .button-group button {
-            width: 48%; /* Adjust width for two buttons */
-            margin: 0;
-        }
-
-        #quizSection {
-            display: none; /* Ẩn phần quiz ban đầu */
-            margin-top: 30px;
-            border-top: 1px solid #eee;
+        #quizContainer, #quizCompleteMessage, #manualInputSection, #rawInputSection, #answerSelectionSection, #reviewQuestionsSection, #examGenerationSection, #manualAnswersReviewSection {
+            display: none;
             padding-top: 20px;
+            border-top: 1px solid #eee;
+            margin-top: 20px;
         }
-        .question-container {
-            margin-bottom: 25px;
-            padding: 15px;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            background-color: #f9f9f9;
-        }
-        .question {
-            font-size: 1.2em;
+        #question {
+            font-weight: bold;
             margin-bottom: 15px;
-            font-weight: bold;
-            color: #333;
+            font-size: 1.1em;
         }
-        .answers button {
+        #answerButtons button {
             display: block;
-            width: calc(100% - 20px); /* Adjust for padding */
-            padding: 12px;
-            margin-bottom: 10px;
+            width: 100%;
             text-align: left;
-            background-color: #e9ecef;
+            margin-bottom: 8px;
+            background-color: #f8f9fa;
             color: #333;
-            border: 1px solid #ced4da;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.2s, border-color 0.2s;
+            border: 1px solid #ddd;
+            padding: 12px;
+            border-radius: 6px;
         }
-        .answers button:hover:not(:disabled) {
-            background-color: #d6e0e7;
-            border-color: #a7b7c2;
+        #answerButtons button.selected {
+            background-color: #e0f7fa; /* Light blue for selected */
+            border-color: #007bff;
         }
-        .answers button:disabled {
-            cursor: not-allowed;
-            opacity: 0.8;
-        }
-        .answers button.correct {
-            background-color: #d4edda; /* Green for correct */
+        #answerButtons button.correct {
+            background-color: #d4edda; /* Light green for correct */
             border-color: #28a745;
-            font-weight: bold;
         }
-        .answers button.wrong {
-            background-color: #f8d7da; /* Red for wrong */
+        #answerButtons button.incorrect {
+            background-color: #f8d7da; /* Light red for incorrect */
             border-color: #dc3545;
         }
+        #answerButtons button:hover:not(.correct):not(.incorrect) {
+            background-color: #e9ecef;
+        }
         #result {
-            text-align: center;
-            font-size: 1.1em;
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        #result.correct-feedback {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        #result.wrong-feedback {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        #nextQuestionBtn {
-            display: none; /* Ẩn nút "Tiếp theo" ban đầu */
-            margin-top: 20px;
-            background-color: #28a745;
-        }
-        #nextQuestionBtn:hover {
-            background-color: #218838;
-        }
-        #quizCompleteMessage {
-            text-align: center;
-            font-size: 1.2em; /* Adjusted font size */
-            color: #007bff;
-            margin-top: 30px;
-            display: none;
-            padding: 20px;
-            border: 1px solid #b3d7ff;
-            background-color: #e0f2ff;
-            border-radius: 8px;
-        }
-        #quizCompleteMessage p {
-            margin-bottom: 10px;
-        }
-        #quizCompleteMessage button {
             margin-top: 15px;
+            font-weight: bold;
+            text-align: center;
         }
-        #retakeWrongBtn {
-            background-color: #ffc107; /* Orange for retake button */
-            color: #343a40;
+        #timer {
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: right;
+            margin-bottom: 10px;
+            color: #d9534f;
         }
-        #retakeWrongBtn:hover {
-            background-color: #e0a800;
+        #currentQuestionIndicator {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            color: #666;
         }
-        #incorrectAnswersList {
-            text-align: left;
+        #summaryTable {
+            width: 100%;
+            border-collapse: collapse;
             margin-top: 20px;
-            border-top: 1px dashed #a3c9e6;
-            padding-top: 15px;
+        }
+        #summaryTable th, #summaryTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        #summaryTable th {
+            background-color: #f2f2f2;
         }
         .incorrect-item {
-            background-color: #ffebe6;
-            padding: 10px;
             margin-bottom: 10px;
+            border: 1px solid #f8d7da;
+            background-color: #f8d7da50;
+            padding: 10px;
             border-radius: 5px;
-            border: 1px solid #ffc2b3;
         }
-        .incorrect-item strong {
+        .incorrect-item p {
+            margin: 5px 0;
+        }
+        .incorrect-item .correct-answer {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .incorrect-item .your-answer {
             color: #dc3545;
-        }
-        .unanswered-item {
-            background-color: #fff3cd;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            border: 1px solid #ffeeba;
-        }
-        .unanswered-item strong {
-            color: #856404;
-        }
-
-        /* Styles for Raw Input and Answer Selection */
-        #rawInputSection, #answerSelectionSection {
-            display: none; /* Hidden by default */
-            margin-top: 20px;
-            padding: 15px;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            background-color: #f9f9f9;
-        }
-        #answerSelectionSection {
-            max-height: 500px; /* Limit height for scrolling */
-            overflow-y: auto; /* Enable vertical scrolling */
-        }
-        .raw-question-item {
-            margin-bottom: 20px;
-            padding: 10px;
-            border: 1px dashed #ccc;
-            border-radius: 5px;
-        }
-        .raw-question-item p {
             font-weight: bold;
-            margin-bottom: 10px;
         }
-        .raw-question-item .raw-answers button {
-            display: inline-block; /* Display buttons inline */
-            width: auto; /* Auto width */
-            margin-right: 10px; /* Spacing between buttons */
-            margin-bottom: 5px;
-            padding: 8px 15px;
-            background-color: #dbe9f4; /* Lighter blue for selection */
-            color: #0056b3;
-            border: 1px solid #a3c9e6;
-        }
-        .raw-question-item .raw-answers button.selected-correct {
-            background-color: #28a745; /* Green when selected as correct */
-            color: white;
-            border-color: #218838;
-        }
-        #exportWordBtn {
-            background-color: #28a745; /* Green for export button */
-            margin-top: 20px;
-        }
-        #exportWordBtn:hover {
-            background-color: #218838;
-        }
-
-        /* Review Section for Manual Input */
-        #reviewQuestionsSection {
-            display: none;
-            margin-top: 20px;
-            padding: 15px;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            background-color: #f9f9f9;
-        }
-        .review-question-item {
-            margin-bottom: 20px;
-            padding: 10px;
-            border: 1px dashed #d1e7dd; /* Light green border */
-            border-radius: 5px;
-            background-color: #eaf7ed; /* Very light green background */
-        }
-        .review-question-item p {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #0a3622;
-        }
-        .review-question-item ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .review-question-item li {
-            padding: 5px 0;
-        }
-        .review-question-item li.correct-answer {
-            font-weight: bold;
-            color: #28a745; /* Green for correct answer */
-        }
-
-        #timerInputGroup {
+        .input-group {
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 15px;
             gap: 10px;
         }
-        #timerInputGroup label {
+        .input-group label {
             font-weight: bold;
         }
-        #timerInputGroup input {
+        .input-group input[type="number"] {
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            width: 80px;
+            width: 100px;
             text-align: center;
             font-size: 1em;
         }
-        #quizTimer {
-            text-align: center;
-            font-size: 1.5em;
+        #examListButtons button {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            background-color: #6c757d; /* Gray button for exam selection */
+        }
+        #examListButtons button:hover {
+            background-color: #5a6268;
+        }
+
+        /* Styles for manual answers review */
+        .manual-review-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .manual-review-item p {
+            margin: 5px 0;
+        }
+        .manual-review-item .question-text {
             font-weight: bold;
-            color: #d9534f; /* Red for timer */
-            margin-bottom: 20px;
+            color: #0056b3;
+        }
+        .manual-review-item .answer-item {
+            margin-left: 15px;
+            color: #555;
+        }
+        .manual-review-item .correct-answer-text {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .suggestion {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Tạo Câu Hỏi Trắc Nghiệm</h1>
+        <h1>Ứng Dụng Trắc Nghiệm</h1>
 
         <div id="mainInputSelection">
             <h2>Chọn Phương Thức Nhập Liệu</h2>
             <div class="button-group">
                 <button onclick="showManualInput()">Nhập thủ công (đã định dạng)</button>
                 <button onclick="showRawInput()">Nhập dữ liệu thô (chưa định dạng)</button>
+                <button onclick="showExamGeneration()">Làm đề ngẫu nhiên</button>
             </div>
         </div>
 
-        <div id="manualInputSection" style="display: none;">
-            <h2>Nhập Câu Hỏi và Đáp Án (Đã định dạng + / -)</h2>
-            <textarea id="questionInput" placeholder="Nhập câu hỏi và đáp án theo định dạng:
-Câu hỏi 1
--Đáp án sai
-+Đáp án đúng
--Đáp án sai
-
-Câu hỏi 2
-+Đáp án đúng
--Đáp án sai"></textarea>
-            <button onclick="parseAndShowReview()">Xem trước & Bắt đầu Trắc nghiệm</button>
+        <div id="manualInputSection">
+            <h2>Nhập Câu Hỏi Thủ Công</h2>
+            <textarea id="manualQuestionsInput" placeholder="Nhập câu hỏi theo định dạng:&#10;Câu hỏi 1?&#10;- Đáp án A&#10;+ Đáp án B (đúng)&#10;- Đáp án C&#10;&#10;Câu hỏi 2?&#10;- Đáp án D&#10;+ Đáp án E&#10;- Đáp án F"></textarea>
+            <div class="input-group">
+                <label for="quizDurationManual">Thời gian làm bài (phút):</label>
+                <input type="number" id="quizDurationManual" value="10" min="1">
+            </div>
+            <button onclick="startManualQuiz()">Bắt đầu Trắc Nghiệm</button>
+            <button onclick="showManualAnswersReview()" style="background-color: #28a745;">Xem đáp án</button>
             <button onclick="backToMainSelection()">Quay lại</button>
         </div>
 
-        <div id="reviewQuestionsSection" style="display: none;">
-            <h2>Xem Lại Câu Hỏi & Đáp Án</h2>
-            <div id="questionsForReview">
-                </div>
-            <div id="timerInputGroup">
-                <label for="quizDuration">Thời gian làm bài (phút):</label>
-                <input type="number" id="quizDuration" value="10" min="1">
+        <div id="manualAnswersReviewSection">
+            <h2>Xem Đáp Án</h2>
+            <div id="manualReviewQuestionsList"></div>
+            <div class="button-group">
+                <button onclick="startQuizFromManualReview()">Bắt đầu Trắc Nghiệm</button>
+                <button onclick="backToManualInput()">Quay lại</button>
             </div>
-            <button onclick="startQuizFromReview()">Bắt đầu Trắc nghiệm</button>
-            <button onclick="backToManualInput()">Quay lại nhập liệu</button>
         </div>
 
-        <div id="rawInputSection" style="display: none;">
-            <h2>Nhập Dữ liệu Thô (Chưa có + / -)</h2>
-            <textarea id="rawQuestionInput" placeholder="Nhập câu hỏi và đáp án theo định dạng:
-Câu hỏi 1
-Đáp án A
-Đáp án B
-Đáp án C
-Đáp án D
-
-Câu hỏi 2
-Đáp án A
-Đáp án B"></textarea>
-            <button onclick="processRawQuestions()">Tiếp tục (Chọn đáp án đúng)</button>
+        <div id="rawInputSection">
+            <h2>Nhập Dữ Liệu Thô</h2>
+            <textarea id="rawQuestionsInput" placeholder="Dán nội dung từ file Word hoặc PDF. Hệ thống sẽ cố gắng phân tích."></textarea>
+            <button onclick="parseAndShowReview()">Phân tích & Xem lại</button>
             <button onclick="backToMainSelection()">Quay lại</button>
         </div>
 
-        <div id="answerSelectionSection" style="display: none;">
-            <h2>Chọn Đáp Án Đúng</h2>
-            <div id="questionsForSelection">
+        <div id="answerSelectionSection">
+            <h2>Chọn Câu Trả Lời Đúng</h2>
+            <p>Vui lòng chọn đáp án đúng cho mỗi câu hỏi được phân tích.</p>
+            <div id="parsedQuestionsReview"></div>
+            <div class="input-group">
+                <label for="quizDurationRaw">Thời gian làm bài (phút):</label>
+                <input type="number" id="quizDurationRaw" value="10" min="1">
             </div>
-            <button id="exportWordBtn" onclick="exportAndStartQuiz()">Xuất Text & Bắt đầu Trắc nghiệm</button>
+            <button onclick="startQuizFromReview()">Bắt đầu Trắc Nghiệm</button>
             <button onclick="backToRawInput()">Quay lại</button>
         </div>
 
-        <div id="quizSection">
-            <h2>Làm Trắc Nghiệm</h2>
-            <div id="quizTimer">Thời gian còn lại: --:--</div>
-            <div id="quizContainer">
-                <div class="question-container">
-                    <p class="question" id="currentQuestion"></p>
-                    <div class="answers" id="answerButtons">
-                    </div>
-                </div>
+        <div id="reviewQuestionsSection">
+            <h2>Xác nhận và Sửa đổi Câu hỏi</h2>
+            <div id="editableQuestionsList"></div>
+            <div class="input-group">
+                <label for="quizDuration">Thời gian làm bài (phút):</label>
+                <input type="number" id="quizDuration" value="10" min="1">
             </div>
+            <button onclick="confirmQuestions()">Bắt đầu Trắc Nghiệm</button>
+            <button onclick="exportQuestions()">Xuất Questions (Word)</button>
+            <button onclick="backToRawInput()">Sửa lại phân tích</button>
+        </div>
+
+        <div id="examGenerationSection">
+            <h2>Tạo Đề Trắc Nghiệm Ngẫu Nhiên</h2>
+            <textarea id="examQuestionInput" placeholder="Nhập toàn bộ câu hỏi (đã định dạng + / -) cho ngân hàng đề." oninput="updateSuggestedNumExams()"></textarea>
+            <div class="input-group">
+                <label for="numExams">Số lượng đề muốn tạo:</label>
+                <input type="number" id="numExams" value="1" min="1">
+            </div>
+            <div class="input-group">
+                <label for="questionsPerExam">Số lượng câu hỏi mỗi đề:</label>
+                <input type="number" id="questionsPerExam" value="10" min="1" oninput="updateSuggestedNumExams()">
+            </div>
+            <p class="suggestion">Có thể tạo tối đa <span id="suggestedNumExams">0</span> đề duy nhất từ ngân hàng hiện có.</p>
+            <button onclick="generateExams()">Tạo Đề & Bắt đầu</button>
+            <button onclick="backToMainSelection()">Quay lại</button>
+
+            <div id="examSelectionArea" style="display: none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">
+                <h3>Chọn Đề Để Làm</h3>
+                <div id="examListButtons"></div>
+            </div>
+        </div>
+
+        <div id="quizContainer">
+            <div id="timer"></div>
+            <div id="currentQuestionIndicator"></div>
+            <div id="question"></div>
+            <div id="answerButtons"></div>
             <div id="result"></div>
-            <button id="nextQuestionBtn" onclick="nextQuestion()">Tiếp theo</button>
-            <div id="quizCompleteMessage">
-                <p>Chúc mừng! Bạn đã hoàn thành tất cả các câu hỏi.</p>
-                <p id="finalScore"></p>
-                <div id="incorrectAnswersList"></div>
-                <button id="retakeWrongBtn" onclick="retakeWrongQuestions()" style="display: none;">Làm lại các câu sai</button>
-                <button onclick="backToMainSelection()">Quay lại màn hình chính</button>
-            </div>
+            <button id="nextQuestionBtn" onclick="nextQuestion()">Câu tiếp theo</button>
+        </div>
+
+        <div id="quizCompleteMessage">
+            <p>Chúc mừng! Bạn đã hoàn thành tất cả các câu hỏi.</p>
+            <p id="finalScore"></p>
+            <div id="incorrectAnswersList"></div>
+            <button id="retakeWrongBtn" onclick="retakeWrongQuestions()" style="display: none;">Làm lại các câu sai</button>
+            <button id="retakeAllBtn" onclick="retakeAllQuestions()" style="background-color: #17a2b8; display: none;">Làm lại toàn bộ đề</button>
+            <button onclick="backToMainSelection()">Quay lại màn hình chính</button>
         </div>
     </div>
 
     <script>
-        let questions = []; // Stores formatted questions (question, answers array, correctAnswer) for the quiz
-        let rawQuestions = []; // Stores unformatted questions temporarily for selection
+        let questions = []; // Current set of questions for the quiz
+        let originalQuestionsForRetake = []; // Stores the original set of questions for "Retake All"
         let currentQuestionIndex = 0;
-        let shuffledQuestionIndices = [];
         let score = 0;
-        let incorrectlyAnsweredQuestions = []; // Stores full question objects answered incorrectly
-        let unansweredQuestions = []; // New: Stores full question objects that were not answered
+        let shuffledQuestionIndices = []; // To keep track of shuffled order
         let timerInterval;
         let timeLeft;
         let totalQuizDurationSeconds;
+        let incorrectlyAnsweredQuestions = [];
+        let unansweredQuestions = [];
+        let rawQuestions = []; // Store questions parsed from raw input before selection
+        let allBankQuestions = []; // Ngân hàng câu hỏi gốc (parsed from exam input)
+        let generatedExams = []; // Mảng chứa các đề thi đã tạo
 
-        // --- View Management ---
+
         function showMainSelection() {
+            console.log("Show Main Selection");
             document.getElementById('mainInputSelection').style.display = 'block';
             document.getElementById('manualInputSection').style.display = 'none';
             document.getElementById('rawInputSection').style.display = 'none';
             document.getElementById('answerSelectionSection').style.display = 'none';
-            document.getElementById('reviewQuestionsSection').style.display = 'none'; // Hide review section
-            document.getElementById('quizSection').style.display = 'none';
-
-            score = 0; // Reset score
-            incorrectlyAnsweredQuestions = []; // Reset incorrect questions
-            unansweredQuestions = []; // Reset unanswered questions
-            document.getElementById('questionInput').value = ''; // Clear input fields
-            document.getElementById('rawQuestionInput').value = '';
-            stopTimer(); // Ensure timer is stopped when going back to main
+            document.getElementById('reviewQuestionsSection').style.display = 'none';
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('quizCompleteMessage').style.display = 'none';
+            document.getElementById('examGenerationSection').style.display = 'none';
+            document.getElementById('manualAnswersReviewSection').style.display = 'none'; // Ensure hidden
         }
 
         function showManualInput() {
+            console.log("Show Manual Input");
             document.getElementById('mainInputSelection').style.display = 'none';
             document.getElementById('manualInputSection').style.display = 'block';
-            document.getElementById('rawInputSection').style.display = 'none';
-            document.getElementById('answerSelectionSection').style.display = 'none';
-            document.getElementById('reviewQuestionsSection').style.display = 'none';
-            document.getElementById('quizSection').style.display = 'none';
-        }
-
-        function showReviewQuestions() {
-            document.getElementById('mainInputSelection').style.display = 'none';
-            document.getElementById('manualInputSection').style.display = 'none';
-            document.getElementById('rawInputSection').style.display = 'none';
-            document.getElementById('answerSelectionSection').style.display = 'none';
-            document.getElementById('reviewQuestionsSection').style.display = 'block';
-            document.getElementById('quizSection').style.display = 'none';
         }
 
         function showRawInput() {
+            console.log("Show Raw Input");
             document.getElementById('mainInputSelection').style.display = 'none';
-            document.getElementById('manualInputSection').style.display = 'none';
             document.getElementById('rawInputSection').style.display = 'block';
-            document.getElementById('answerSelectionSection').style.display = 'none';
-            document.getElementById('reviewQuestionsSection').style.display = 'none';
-            document.getElementById('quizSection').style.display = 'none';
-        }
-
-        function showAnswerSelection() {
-            document.getElementById('mainInputSelection').style.display = 'none';
-            document.getElementById('manualInputSection').style.display = 'none';
-            document.getElementById('rawInputSection').style.display = 'none';
-            document.getElementById('answerSelectionSection').style.display = 'block';
-            document.getElementById('reviewQuestionsSection').style.display = 'none';
-            document.getElementById('quizSection').style.display = 'none';
-        }
-
-        function startQuizDisplay() {
-            document.getElementById('mainInputSelection').style.display = 'none';
-            document.getElementById('manualInputSection').style.display = 'none';
-            document.getElementById('rawInputSection').style.display = 'none';
-            document.getElementById('answerSelectionSection').style.display = 'none';
-            document.getElementById('reviewQuestionsSection').style.display = 'none';
-            document.getElementById('quizSection').style.display = 'block';
         }
 
         function backToMainSelection() {
+            console.log("Back to Main Selection");
             showMainSelection();
             currentQuestionIndex = 0;
             shuffledQuestionIndices = [];
-            document.getElementById('quizContainer').style.display = 'block';
-            document.getElementById('quizCompleteMessage').style.display = 'none';
-            document.getElementById('retakeWrongBtn').style.display = 'none'; // Hide retake button
-            document.getElementById('incorrectAnswersList').innerHTML = ''; // Clear previous list
-            stopTimer(); // Ensure timer is stopped
-        }
+            questions = []; // Clear current questions
+            originalQuestionsForRetake = []; // Clear original questions
+            incorrectlyAnsweredQuestions = [];
+            unansweredQuestions = [];
+            rawQuestions = [];
+            allBankQuestions = [];
+            generatedExams = [];
 
-        function backToManualInput() {
-            showManualInput();
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('quizCompleteMessage').style.display = 'none';
+            document.getElementById('retakeWrongBtn').style.display = 'none';
+            document.getElementById('retakeAllBtn').style.display = 'none';
+            document.getElementById('incorrectAnswersList').innerHTML = '';
+            document.getElementById('examGenerationSection').style.display = 'none';
+            document.getElementById('examQuestionInput').value = ''; // Clear input for exam generation
+            document.getElementById('examSelectionArea').style.display = 'none'; // Hide exam selection
+            document.getElementById('examListButtons').innerHTML = ''; // Clear exam buttons
+            document.getElementById('manualQuestionsInput').value = ''; // Clear manual input
+            stopTimer(); // Stop any running timer
         }
 
         function backToRawInput() {
-            showRawInput();
-            // Re-populate textarea with current rawQuestions data if needed
-            document.getElementById('rawQuestionInput').value = rawQuestions.map(q => {
-                let text = q.question + '\n';
-                text += q.answers.join('\n');
-                return text;
-            }).join('\n\n');
+            console.log("Back to Raw Input");
+            document.getElementById('rawQuestionsInput').value = document.getElementById('rawQuestionsInput').dataset.originalValue || ''; // Restore original raw input
+            document.getElementById('reviewQuestionsSection').style.display = 'none';
+            document.getElementById('answerSelectionSection').style.display = 'none';
+            document.getElementById('rawInputSection').style.display = 'block';
+            document.getElementById('parsedQuestionsReview').innerHTML = ''; // Clear review
         }
 
-        // --- Option 1: Save Questions from Manual Input & Review ---
-        function parseAndShowReview() {
-            const input = document.getElementById('questionInput').value;
+        function backToManualInput() {
+            console.log("Back to Manual Input");
+            document.getElementById('manualAnswersReviewSection').style.display = 'none';
+            document.getElementById('manualInputSection').style.display = 'block';
+        }
+
+        function parseQuestions(input) {
             const lines = input.split('\n').filter(line => line.trim() !== '');
+            let parsed = [];
+            let currentQuestion = null;
+            let questionPattern = /^(?:Câu\s+\d+|[Qq]\.\d+|[0-9]+\.|\d+\.)\s*(.*)$/i;
+
+            lines.forEach(line => {
+                line = line.trim();
+
+                let match = line.match(questionPattern);
+                if (match) {
+                    if (currentQuestion) {
+                        if (currentQuestion.answers.length > 0 && currentQuestion.correctAnswer) {
+                            parsed.push(currentQuestion);
+                        } else {
+                            console.warn('Skipping incomplete question:', currentQuestion.question);
+                        }
+                    }
+                    currentQuestion = {
+                        question: match[1].trim(),
+                        answers: [],
+                        correctAnswer: '' // Default to empty, will be set by user or '+' in manual input
+                    };
+                } else if (currentQuestion) {
+                    let answerMatch = line.match(/^([A-Za-z]\.|\d+\.|\*|\-|\+|\([A-Za-z]\))\s*(.*)$/i);
+                    if (answerMatch) {
+                        let answerText = answerMatch[2].trim();
+                        currentQuestion.answers.push(answerText);
+                        // For manual input, check if it's the correct answer
+                        if (line.startsWith('+')) {
+                            if (currentQuestion.correctAnswer) {
+                                console.warn(`Warning: Multiple correct answers for question "${currentQuestion.question}". Only the last one will be kept.`);
+                            }
+                            currentQuestion.correctAnswer = answerText;
+                        }
+                    } else if (line.length > 0) {
+                        if (currentQuestion.answers.length > 0) {
+                             currentQuestion.answers[currentQuestion.answers.length - 1] += ' ' + line;
+                        } else {
+                            currentQuestion.question += ' ' + line;
+                        }
+                    }
+                }
+            });
+
+            if (currentQuestion && currentQuestion.answers.length > 0 && currentQuestion.correctAnswer) {
+                parsed.push(currentQuestion);
+            } else if (currentQuestion) {
+                console.warn('Skipping final incomplete question:', currentQuestion.question);
+            }
+            return parsed;
+        }
+
+        function parseManualInputQuestions() {
+            const input = document.getElementById('manualQuestionsInput').value;
+            const lines = input.split('\n').filter(line => line.trim() !== '');
+            let tempQuestions = [];
+            let currentQuestion = null;
+
+            let allValid = true;
+
+            lines.forEach(line => {
+                if (line.trim().length === 0) return;
+
+                if (!line.startsWith('-') && !line.startsWith('+')) {
+                    if (currentQuestion) {
+                        if (currentQuestion.answers.length > 0 && currentQuestion.correctAnswer) {
+                            tempQuestions.push(currentQuestion);
+                        } else {
+                            allValid = false;
+                            alert(`Lỗi định dạng: Câu hỏi "${currentQuestion.question}" không hợp lệ (thiếu đáp án hoặc đáp án đúng). Vui lòng kiểm tra lại.`);
+                            return; // Stop further processing for validation
+                        }
+                    }
+                    currentQuestion = {
+                        question: line.trim(),
+                        answers: [],
+                        correctAnswer: ''
+                    };
+                } else if (currentQuestion) {
+                    const answerText = line.substring(1).trim();
+                    const isCorrect = line.startsWith('+');
+                    currentQuestion.answers.push(answerText);
+                    if (isCorrect) {
+                        if (currentQuestion.correctAnswer) {
+                            allValid = false;
+                            alert(`Lỗi định dạng: Câu hỏi "${currentQuestion.question}" có nhiều hơn một đáp án đúng. Vui lòng chỉ định một đáp án đúng bằng dấu '+'.`);
+                            return; // Stop further processing for validation
+                        }
+                        currentQuestion.correctAnswer = answerText;
+                    }
+                }
+            });
+
+            if (currentQuestion && allValid) { // Add the last question if it exists and no prior errors
+                if (currentQuestion.answers.length > 0 && currentQuestion.correctAnswer) {
+                    tempQuestions.push(currentQuestion);
+                } else {
+                    allValid = false;
+                    alert(`Lỗi định dạng: Câu hỏi "${currentQuestion.question}" không hợp lệ (thiếu đáp án hoặc đáp án đúng). Vui lòng kiểm tra lại.`);
+                }
+            }
+
+            if (!allValid || tempQuestions.length === 0) {
+                return null; // Return null if there are validation errors or no questions
+            }
+            return tempQuestions;
+        }
+
+        function startManualQuiz() {
+            console.log("Starting Manual Quiz Directly...");
+            const parsedQuestions = parseManualInputQuestions();
+
+            if (!parsedQuestions) { // If parsing failed or returned null due to validation errors
+                return;
+            }
+
+            questions = parsedQuestions;
+            originalQuestionsForRetake = JSON.parse(JSON.stringify(questions));
+
+            const durationInput = document.getElementById('quizDurationManual').value;
+            const duration = parseInt(durationInput);
+            if (isNaN(duration) || duration <= 0) {
+                alert('Vui lòng nhập thời gian làm bài hợp lệ (phút).');
+                return;
+            }
+            totalQuizDurationSeconds = duration * 60;
+            timeLeft = totalQuizDurationSeconds;
+
+            startQuizDisplay();
+            shuffleQuestions();
+            loadQuestion();
+            startTimer();
+        }
+
+        function showManualAnswersReview() {
+            console.log("Showing Manual Answers Review...");
+            const parsedQuestions = parseManualInputQuestions();
+
+            if (!parsedQuestions) { // If parsing failed or returned null due to validation errors
+                return;
+            }
+
+            questions = parsedQuestions; // Set global questions for potential quiz start from here
+            originalQuestionsForRetake = JSON.parse(JSON.stringify(questions)); // Store for retake all
+
+            document.getElementById('manualInputSection').style.display = 'none';
+            document.getElementById('manualAnswersReviewSection').style.display = 'block';
+
+            const reviewList = document.getElementById('manualReviewQuestionsList');
+            reviewList.innerHTML = '';
+
+            questions.forEach((q, qIndex) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.classList.add('manual-review-item');
+                itemDiv.innerHTML = `<p class="question-text">Câu ${qIndex + 1}: ${q.question}</p>`;
+                q.answers.forEach(ans => {
+                    const answerP = document.createElement('p');
+                    answerP.classList.add('answer-item');
+                    if (ans === q.correctAnswer) {
+                        answerP.classList.add('correct-answer-text');
+                        answerP.textContent = `+ ${ans}`;
+                    } else {
+                        answerP.textContent = `- ${ans}`;
+                    }
+                    itemDiv.appendChild(answerP);
+                });
+                reviewList.appendChild(itemDiv);
+            });
+        }
+
+        function startQuizFromManualReview() {
+            console.log("Starting Quiz From Manual Review...");
+            // Questions and originalQuestionsForRetake should already be set by showManualAnswersReview()
+            if (questions.length === 0) {
+                alert('Không có câu hỏi nào để bắt đầu trắc nghiệm.');
+                return;
+            }
+
+            const durationInput = document.getElementById('quizDurationManual').value; // Use the duration from the manual input section
+            const duration = parseInt(durationInput);
+            if (isNaN(duration) || duration <= 0) {
+                alert('Vui lòng nhập thời gian làm bài hợp lệ (phút).');
+                return;
+            }
+            totalQuizDurationSeconds = duration * 60;
+            timeLeft = totalQuizDurationSeconds;
+
+            startQuizDisplay();
+            shuffleQuestions();
+            loadQuestion();
+            startTimer();
+        }
+
+        function parseAndShowReview() {
+            console.log("Parsing and Showing Review (Raw Input)...");
+            const rawInput = document.getElementById('rawQuestionsInput').value;
+            document.getElementById('rawQuestionsInput').dataset.originalValue = rawInput;
+
+            rawQuestions = parseQuestions(rawInput); // Uses the general parseQuestions
+
+            if (rawQuestions.length === 0) {
+                alert('Không thể phân tích câu hỏi nào từ dữ liệu thô. Vui lòng kiểm tra định dạng.');
+                return;
+            }
+
+            const reviewContainer = document.getElementById('editableQuestionsList');
+            reviewContainer.innerHTML = '';
+
+            rawQuestions.forEach((q, qIndex) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.style.marginBottom = '20px';
+                questionDiv.style.border = '1px solid #ddd';
+                questionDiv.style.padding = '15px';
+                questionDiv.style.borderRadius = '5px';
+                questionDiv.innerHTML = `<p><strong>Câu ${qIndex + 1}: </strong><span contenteditable="true" data-field="question" data-index="${qIndex}">${q.question}</span></p>`;
+
+                q.answers.forEach((ans, ansIndex) => {
+                    const answerDiv = document.createElement('div');
+                    answerDiv.style.marginBottom = '5px';
+                    answerDiv.innerHTML = `
+                        <input type="radio" name="correctAnswer_${qIndex}" id="correct_${qIndex}_${ansIndex}" value="${ans}" ${q.correctAnswer === ans ? 'checked' : ''}>
+                        <label for="correct_${qIndex}_${ansIndex}"><span contenteditable="true" data-field="answer" data-q-index="${qIndex}" data-ans-index="${ansIndex}">${ans}</span></label>
+                    `;
+                    questionDiv.appendChild(answerDiv);
+                });
+                reviewContainer.appendChild(questionDiv);
+            });
+
+            document.getElementById('rawInputSection').style.display = 'none';
+            document.getElementById('reviewQuestionsSection').style.display = 'block';
+        }
+
+        function confirmQuestions() {
+            console.log("Confirming Questions...");
             questions = [];
+            const reviewContainer = document.getElementById('editableQuestionsList');
+            const questionDivs = reviewContainer.children;
+
+            let allQuestionsValid = true;
+
+            Array.from(questionDivs).forEach((qDiv, qIndex) => {
+                const questionTextElement = qDiv.querySelector(`[data-field="question"][data-index="${qIndex}"]`);
+                const questionText = questionTextElement ? questionTextElement.textContent.trim() : '';
+
+                const radioButtons = qDiv.querySelectorAll(`input[name="correctAnswer_${qIndex}"]`);
+                let selectedCorrectAnswer = null;
+                radioButtons.forEach(radio => {
+                    if (radio.checked) {
+                        selectedCorrectAnswer = radio.value;
+                    }
+                });
+
+                const answers = [];
+                const answerLabels = qDiv.querySelectorAll(`label[data-field="answer"][data-q-index="${qIndex}"] span`);
+                answerLabels.forEach(labelSpan => {
+                    answers.push(labelSpan.textContent.trim());
+                });
+
+                if (questionText && answers.length > 0 && selectedCorrectAnswer) {
+                    questions.push({
+                        question: questionText,
+                        answers: answers,
+                        correctAnswer: selectedCorrectAnswer
+                    });
+                } else {
+                    allQuestionsValid = false;
+                    alert(`Câu hỏi ${qIndex + 1} không hợp lệ (thiếu câu hỏi, đáp án hoặc chưa chọn đáp án đúng). Vui lòng kiểm tra lại.`);
+                }
+            });
+
+            if (!allQuestionsValid || questions.length === 0) {
+                questions = [];
+                return;
+            }
+
+            originalQuestionsForRetake = JSON.parse(JSON.stringify(questions));
+
+            const durationInput = document.getElementById('quizDuration').value;
+            const duration = parseInt(durationInput);
+            if (isNaN(duration) || duration <= 0) {
+                alert('Vui lòng nhập thời gian làm bài hợp lệ (phút).');
+                return;
+            }
+            totalQuizDurationSeconds = duration * 60;
+            timeLeft = totalQuizDurationSeconds;
+
+            startQuizDisplay();
+            shuffleQuestions();
+            loadQuestion();
+            startTimer();
+        }
+
+        function startQuizFromReview() {
+            confirmQuestions();
+        }
+
+        function exportQuestions() {
+            if (questions.length === 0) {
+                alert('Không có câu hỏi nào để xuất.');
+                return;
+            }
+
+            // Simple text export
+            alert('Chức năng xuất Word yêu cầu một tệp mẫu .docx. Hiện tại chỉ hỗ trợ xuất dưới dạng văn bản thuần (text).');
+            let textContent = "";
+            questions.forEach((q, index) => {
+                textContent += `Câu ${index + 1}: ${q.question}\n`;
+                q.answers.forEach(ans => {
+                    textContent += `${q.correctAnswer === ans ? '+' : '-'} ${ans}\n`;
+                });
+                textContent += "\n";
+            });
+            const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+            saveAs(blob, 'cau_hoi_trac_nghiem.txt');
+        }
+
+
+        function startQuizDisplay() {
+            console.log("Starting Quiz Display...");
+            document.getElementById('manualInputSection').style.display = 'none';
+            document.getElementById('rawInputSection').style.display = 'none';
+            document.getElementById('answerSelectionSection').style.display = 'none';
+            document.getElementById('reviewQuestionsSection').style.display = 'none';
+            document.getElementById('examGenerationSection').style.display = 'none';
+            document.getElementById('manualAnswersReviewSection').style.display = 'none'; // Ensure hidden
+            document.getElementById('quizContainer').style.display = 'block';
+            document.getElementById('quizCompleteMessage').style.display = 'none';
+            document.getElementById('nextQuestionBtn').style.display = 'block';
+            document.getElementById('result').textContent = '';
+        }
+
+        function shuffleQuestions() {
+            shuffledQuestionIndices = Array.from({ length: questions.length }, (_, i) => i);
+            for (let i = shuffledQuestionIndices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledQuestionIndices[i], shuffledQuestionIndices[j]] = [shuffledQuestionIndices[j], shuffledQuestionIndices[i]];
+            }
+            currentQuestionIndex = 0;
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= shuffledQuestionIndices.length) {
+                endQuiz();
+                return;
+            }
+
+            const actualQuestionIndex = shuffledQuestionIndices[currentQuestionIndex];
+            const currentQuestion = questions[actualQuestionIndex];
+
+            document.getElementById('question').textContent = `Câu ${currentQuestionIndex + 1}: ${currentQuestion.question}`;
+            document.getElementById('currentQuestionIndicator').textContent = `Câu ${currentQuestionIndex + 1} / ${questions.length}`;
+
+            const answerButtonsDiv = document.getElementById('answerButtons');
+            answerButtonsDiv.innerHTML = '';
+            document.getElementById('result').textContent = '';
+            document.getElementById('nextQuestionBtn').disabled = true;
+
+            const shuffledAnswers = [...currentQuestion.answers];
+            for (let i = shuffledAnswers.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledAnswers[i], shuffledAnswers[j]] = [shuffledAnswers[j], shuffledAnswers[i]];
+            }
+
+            shuffledAnswers.forEach(answer => {
+                const button = document.createElement('button');
+                button.textContent = answer;
+                button.onclick = () => selectAnswer(button, answer, currentQuestion);
+                answerButtonsDiv.appendChild(button);
+            });
+        }
+
+        function selectAnswer(selectedButton, selectedAnswer, currentQuestion) {
+            const actualQuestionIndex = shuffledQuestionIndices[currentQuestionIndex];
+            questions[actualQuestionIndex].yourAnswer = selectedAnswer;
+            questions[actualQuestionIndex].attempted = true;
+
+            const answerButtons = document.querySelectorAll('#answerButtons button');
+            answerButtons.forEach(button => {
+                button.disabled = true;
+                button.classList.remove('selected');
+                if (button === selectedButton) {
+                    button.classList.add('selected');
+                }
+            });
+
+            const resultDiv = document.getElementById('result');
+            if (selectedAnswer === currentQuestion.correctAnswer) {
+                resultDiv.textContent = 'Chính xác!';
+                resultDiv.style.color = 'green';
+                selectedButton.classList.add('correct');
+                score++;
+            } else {
+                resultDiv.textContent = 'Sai rồi. Đáp án đúng là: ' + currentQuestion.correctAnswer;
+                resultDiv.style.color = 'red';
+                selectedButton.classList.add('incorrect');
+                answerButtons.forEach(button => {
+                    if (button.textContent === currentQuestion.correctAnswer) {
+                        button.classList.add('correct');
+                    }
+                });
+            }
+            document.getElementById('nextQuestionBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            const timerDisplay = document.getElementById('timer');
+            timerDisplay.style.display = 'block';
+
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `Thời gian còn lại: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.textContent = 'Hết giờ!';
+                    endQuiz(true);
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            document.getElementById('timer').style.display = 'none';
+        }
+
+        function endQuiz(timedOut = false) {
+            stopTimer();
+
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('result').textContent = '';
+            document.getElementById('nextQuestionBtn').style.display = 'none';
+            const quizCompleteMessage = document.getElementById('quizCompleteMessage');
+            const finalScoreDisplay = document.getElementById('finalScore');
+            const incorrectAnswersListDiv = document.getElementById('incorrectAnswersList');
+            const retakeWrongBtn = document.getElementById('retakeWrongBtn');
+            const retakeAllBtn = document.getElementById('retakeAllBtn');
+
+            incorrectlyAnsweredQuestions = questions.filter(q => q.attempted && q.yourAnswer !== q.correctAnswer);
+            unansweredQuestions = questions.filter(q => !q.attempted);
+
+            let scoreMessage = `Bạn đã trả lời đúng ${score} trên ${questions.length} câu.`;
+            if (timedOut) {
+                scoreMessage += " (Hết giờ)";
+            }
+            finalScoreDisplay.textContent = scoreMessage;
+
+            incorrectAnswersListDiv.innerHTML = '';
+            if (incorrectlyAnsweredQuestions.length > 0) {
+                const incorrectTitle = document.createElement('h3');
+                incorrectTitle.textContent = 'Các câu trả lời sai:';
+                incorrectAnswersListDiv.appendChild(incorrectTitle);
+                incorrectlyAnsweredQuestions.forEach((q, index) => {
+                    const item = document.createElement('div');
+                    item.classList.add('incorrect-item');
+                    item.innerHTML = `
+                        <p><strong>Câu hỏi:</strong> ${q.question}</p>
+                        <p class="your-answer"><strong>Câu trả lời của bạn:</strong> ${q.yourAnswer || 'Chưa trả lời'}</p>
+                        <p class="correct-answer"><strong>Đáp án đúng:</strong> ${q.correctAnswer}</p>
+                    `;
+                    incorrectAnswersListDiv.appendChild(item);
+                });
+                retakeWrongBtn.textContent = 'Làm lại các câu sai';
+                retakeWrongBtn.style.display = 'block';
+            }
+
+            if (unansweredQuestions.length > 0) {
+                const unansweredTitle = document.createElement('h3');
+                unansweredTitle.textContent = 'Các câu chưa trả lời:';
+                incorrectAnswersListDiv.appendChild(unansweredTitle);
+                if (incorrectlyAnsweredQuestions.length > 0) {
+                    retakeWrongBtn.textContent = 'Làm lại các câu sai hoặc chưa làm';
+                } else {
+                    retakeWrongBtn.textContent = 'Làm lại các câu chưa làm';
+                }
+                unansweredQuestions.forEach((q, index) => {
+                    const item = document.createElement('div');
+                    item.classList.add('incorrect-item');
+                    item.innerHTML = `
+                        <p><strong>Câu hỏi:</strong> ${q.question}</p>
+                        <p>Bạn chưa trả lời câu này.</p>
+                        <p class="correct-answer"><strong>Đáp án đúng:</strong> ${q.correctAnswer}</p>
+                    `;
+                    incorrectAnswersListDiv.appendChild(item);
+                });
+                retakeWrongBtn.style.display = 'block';
+            }
+
+            retakeAllBtn.style.display = 'block';
+
+            quizCompleteMessage.style.display = 'block';
+
+            const allAnswerButtons = document.querySelectorAll('#answerButtons button');
+            allAnswerButtons.forEach(button => button.disabled = true);
+        }
+
+        function retakeWrongQuestions() {
+            const questionsToRetake = [...incorrectlyAnsweredQuestions, ...unansweredQuestions];
+
+            if (questionsToRetake.length === 0) {
+                alert('Không có câu hỏi sai hoặc chưa làm để làm lại!');
+                return;
+            }
+
+            questions = questionsToRetake.map(q => ({...q, attempted: false, yourAnswer: undefined}));
+            incorrectlyAnsweredQuestions = [];
+            unansweredQuestions = [];
+            score = 0;
+
+            document.getElementById('quizCompleteMessage').style.display = 'none';
+            document.getElementById('incorrectAnswersList').innerHTML = '';
+            document.getElementById('retakeWrongBtn').style.display = 'none';
+            document.getElementById('retakeAllBtn').style.display = 'none';
+
+            shuffleQuestions();
+            loadQuestion();
+            const durationInput = document.getElementById('quizDuration').value || document.getElementById('quizDurationManual').value || '10';
+            const duration = parseInt(durationInput);
+            totalQuizDurationSeconds = duration * 60;
+            timeLeft = totalQuizDurationSeconds;
+            startTimer();
+        }
+
+        function retakeAllQuestions() {
+            if (originalQuestionsForRetake.length === 0) {
+                alert('Không có đề nào để làm lại. Vui lòng bắt đầu một bài trắc nghiệm mới.');
+                return;
+            }
+            questions = JSON.parse(JSON.stringify(originalQuestionsForRetake));
+            incorrectlyAnsweredQuestions = [];
+            unansweredQuestions = [];
+            score = 0;
+
+            document.getElementById('quizCompleteMessage').style.display = 'none';
+            document.getElementById('incorrectAnswersList').innerHTML = '';
+            document.getElementById('retakeWrongBtn').style.display = 'none';
+            document.getElementById('retakeAllBtn').style.display = 'none';
+
+            shuffleQuestions();
+            loadQuestion();
+
+            const durationInput = document.getElementById('quizDuration').value || document.getElementById('quizDurationManual').value || '10';
+            const duration = parseInt(durationInput);
+            totalQuizDurationSeconds = duration * 60;
+            timeLeft = totalQuizDurationSeconds;
+            startTimer();
+        }
+
+        // --- Exam Generation Functions ---
+        function showExamGeneration() {
+            console.log("Showing Exam Generation Section...");
+            document.getElementById('mainInputSelection').style.display = 'none';
+            document.getElementById('manualInputSection').style.display = 'none';
+            document.getElementById('rawInputSection').style.display = 'none';
+            document.getElementById('answerSelectionSection').style.display = 'none';
+            document.getElementById('reviewQuestionsSection').style.display = 'none';
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('quizCompleteMessage').style.display = 'none';
+            document.getElementById('manualAnswersReviewSection').style.display = 'none'; // Ensure hidden
+
+            document.getElementById('examGenerationSection').style.display = 'block';
+            document.getElementById('examQuestionInput').value = '';
+            document.getElementById('examSelectionArea').style.display = 'none';
+            document.getElementById('examListButtons').innerHTML = '';
+
+            allBankQuestions = [];
+            generatedExams = [];
+            updateSuggestedNumExams(); // Update suggestion when section is shown
+        }
+
+        function parseExamBankQuestions() {
+            const input = document.getElementById('examQuestionInput').value;
+            const lines = input.split('\n').filter(line => line.trim() !== '');
+            let tempQuestions = [];
             let currentQuestion = null;
 
             lines.forEach(line => {
@@ -493,7 +983,7 @@ Câu hỏi 2
                 if (!line.startsWith('-') && !line.startsWith('+')) {
                     if (currentQuestion) {
                         if (currentQuestion.answers.length > 0 && currentQuestion.correctAnswer) {
-                            questions.push(currentQuestion);
+                            tempQuestions.push(currentQuestion);
                         } else {
                             console.warn('Bỏ qua câu hỏi không hợp lệ (thiếu đáp án hoặc đáp án đúng):', currentQuestion.question);
                         }
@@ -508,465 +998,172 @@ Câu hỏi 2
                     const isCorrect = line.startsWith('+');
                     currentQuestion.answers.push(answerText);
                     if (isCorrect) {
+                        if (currentQuestion.correctAnswer) {
+                            console.warn(`Câu hỏi "${currentQuestion.question}" có nhiều hơn một đáp án đúng trong ngân hàng đề.`);
+                        }
                         currentQuestion.correctAnswer = answerText;
                     }
                 }
             });
 
             if (currentQuestion && currentQuestion.answers.length > 0 && currentQuestion.correctAnswer) {
-                questions.push(currentQuestion);
+                tempQuestions.push(currentQuestion);
             } else if (currentQuestion) {
                 console.warn('Bỏ qua câu hỏi cuối cùng không hợp lệ (thiếu đáp án hoặc đáp án đúng):', currentQuestion.question);
             }
-
-            if (questions.length > 0) {
-                displayQuestionsForReview();
-                showReviewQuestions();
-            } else {
-                alert('Vui lòng nhập câu hỏi theo định dạng đã cho và đảm bảo có ít nhất một câu hỏi hợp lệ.');
-            }
+            return tempQuestions;
         }
 
-        function displayQuestionsForReview() {
-            const container = document.getElementById('questionsForReview');
-            container.innerHTML = '';
+        function updateSuggestedNumExams() {
+            const currentBank = parseExamBankQuestions();
+            const questionsPerExam = parseInt(document.getElementById('questionsPerExam').value);
+            const suggestedNumExamsSpan = document.getElementById('suggestedNumExams');
 
-            if (questions.length === 0) {
-                container.textContent = 'Không có câu hỏi nào để xem lại.';
+            if (isNaN(questionsPerExam) || questionsPerExam <= 0) {
+                suggestedNumExamsSpan.innerHTML = 'Vui lòng nhập số câu hỏi mỗi đề hợp lệ.';
                 return;
             }
 
-            questions.forEach((qData, qIndex) => {
-                const qItem = document.createElement('div');
-                qItem.classList.add('review-question-item');
+            const totalQuestionsInBank = currentBank.length;
+            const maxFullUniqueExams = Math.floor(totalQuestionsInBank / questionsPerExam);
+            const remainingQuestions = totalQuestionsInBank % questionsPerExam;
 
-                const qText = document.createElement('p');
-                qText.textContent = `Câu hỏi ${qIndex + 1}: ${qData.question}`;
-                qItem.appendChild(qText);
+            let suggestionText = `Có thể tạo tối đa <strong>${maxFullUniqueExams}</strong> đề duy nhất từ ngân hàng hiện có.`;
 
-                const answersList = document.createElement('ul');
-                qData.answers.forEach(answer => {
-                    const li = document.createElement('li');
-                    li.textContent = answer;
-                    if (answer === qData.correctAnswer) {
-                        li.classList.add('correct-answer');
-                    }
-                    answersList.appendChild(li);
-                });
-                qItem.appendChild(answersList);
-                container.appendChild(qItem);
-            });
+            if (totalQuestionsInBank === 0) {
+                suggestionText = `Ngân hàng đề trống.`;
+            } else if (maxFullUniqueExams === 0 && totalQuestionsInBank < questionsPerExam) {
+                // Case: Bank has questions, but not enough for even one full unique exam
+                suggestionText += ` (Ngân hàng có ${totalQuestionsInBank} câu hỏi. Để có 1 đề ${questionsPerExam} câu, sẽ cần bù đắp ${questionsPerExam - totalQuestionsInBank} câu ngẫu nhiên từ ngân hàng, có thể trùng lặp).`;
+            } else if (remainingQuestions > 0) {
+                // At least one full unique exam possible, and there are remainders
+                suggestionText += ` Bạn có thể tạo thêm <strong>1</strong> đề nữa (đề này sẽ bao gồm ${remainingQuestions} câu hỏi duy nhất còn lại và được bù đắp bằng ${questionsPerExam - remainingQuestions} câu ngẫu nhiên từ ngân hàng, có thể trùng lặp).`;
+            }
+
+            suggestedNumExamsSpan.innerHTML = suggestionText; // Use innerHTML for strong tag
         }
 
-        function startQuizFromReview() {
-            const durationInput = document.getElementById('quizDuration').value;
-            const duration = parseInt(durationInput);
 
-            if (isNaN(duration) || duration <= 0) {
-                alert('Vui lòng nhập thời gian làm bài hợp lệ (lớn hơn 0 phút).');
+        function generateExams() {
+            console.log("Generating Exams...");
+            allBankQuestions = parseExamBankQuestions();
+
+            if (allBankQuestions.length === 0) {
+                alert('Vui lòng nhập câu hỏi vào ngân hàng đề.');
                 return;
             }
 
-            totalQuizDurationSeconds = duration * 60; // Convert minutes to seconds
-            timeLeft = totalQuizDurationSeconds;
+            const numExams = parseInt(document.getElementById('numExams').value);
+            const questionsPerExam = parseInt(document.getElementById('questionsPerExam').value);
 
-            if (questions.length > 0) {
-                startQuizDisplay();
-                shuffleQuestions();
-                loadQuestion();
-                startTimer();
-            } else {
-                alert('Không có câu hỏi nào để bắt đầu trắc nghiệm.');
-                backToManualInput(); // Go back if no questions
+            if (isNaN(numExams) || numExams <= 0) {
+                alert('Lỗi: Số lượng đề không hợp lệ. Vui lòng nhập một số dương.');
+                return;
             }
-        }
+            if (isNaN(questionsPerExam) || questionsPerExam <= 0) {
+                alert('Lỗi: Số lượng câu hỏi mỗi đề không hợp lệ. Vui lòng nhập một số dương.');
+                return;
+            }
 
-        // --- Option 2: Process Raw Questions ---
-        function processRawQuestions() {
-            const rawInput = document.getElementById('rawQuestionInput').value;
-            const lines = rawInput.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-            rawQuestions = [];
-            let currentRawQuestion = null;
+            const totalQuestionsInBank = allBankQuestions.length;
+            const maxFullUniqueExams = Math.floor(totalQuestionsInBank / questionsPerExam);
+            const remainingUniqueQuestionsCount = totalQuestionsInBank % questionsPerExam;
 
-            lines.forEach(line => {
-                // Improved heuristic for new questions: check for common answer prefixes (A., B., 1., 2.)
-                // and also if it seems like a new numbered question (e.g., "Câu hỏi 1", "Question 1")
-                const isAnswerLine = /^[A-Da-d][.)]?\s|^[0-9]+\.[ ]+/.test(line) || line.startsWith('-') || line.startsWith('+');
-                
-                if (!isAnswerLine) { // It's likely a new question
-                    if (currentRawQuestion && currentRawQuestion.answers.length > 0) {
-                        rawQuestions.push(currentRawQuestion);
+            // Strict validation for 'numExams' beyond the allowed limit
+            // Block if requested exams are more than maxFullUniqueExams + 1
+            // Or if numExams is maxFullUniqueExams + 1 but there are no remaining unique questions (meaning the +1 exam would be entirely repeated)
+            if (numExams > maxFullUniqueExams + 1 || (numExams === maxFullUniqueExams + 1 && remainingUniqueQuestionsCount === 0)) {
+                let errorMessage = `Không thể tạo ${numExams} đề với ${questionsPerExam} câu hỏi mỗi đề.\n`;
+                errorMessage += `Ngân hàng đề chỉ có ${totalQuestionsInBank} câu hỏi duy nhất. \n`;
+
+                if (maxFullUniqueExams > 0) {
+                    errorMessage += `Bạn chỉ có thể tạo tối đa ${maxFullUniqueExams} đề duy nhất. `;
+                    if (remainingUniqueQuestionsCount > 0) {
+                        errorMessage += `Hoặc thêm 1 đề thứ ${maxFullUniqueExams + 1} (có thể bao gồm câu hỏi trùng lặp để đủ số lượng).`;
                     }
-                    currentRawQuestion = {
-                        question: line,
-                        answers: [],
-                        correctAnswer: ''
-                    };
-                } else if (currentRawQuestion) {
-                    currentRawQuestion.answers.push(line);
+                } else { // maxFullUniqueExams === 0
+                    if (totalQuestionsInBank > 0) { // Has some questions, but not enough for a full unique exam
+                         errorMessage += `Để tạo 1 đề ${questionsPerExam} câu, bạn cần ít nhất ${questionsPerExam} câu hỏi. Ngân hàng chỉ có ${totalQuestionsInBank} câu. Bạn có thể tạo 1 đề duy nhất (sẽ được bù đắp câu hỏi).`;
+                    } else { // No questions at all
+                         errorMessage += `Ngân hàng đề không có câu hỏi nào.`;
+                    }
                 }
-            });
-
-            if (currentRawQuestion && currentRawQuestion.answers.length > 0) {
-                rawQuestions.push(currentRawQuestion);
-            }
-
-            if (rawQuestions.length > 0) {
-                displayQuestionsForSelection();
-                showAnswerSelection();
-            } else {
-                alert('Không tìm thấy câu hỏi nào trong dữ liệu thô. Vui lòng kiểm tra định dạng nhập liệu.');
-            }
-        }
-
-        // --- Display Questions for Answer Selection ---
-        function displayQuestionsForSelection() {
-            const container = document.getElementById('questionsForSelection');
-            container.innerHTML = '';
-
-            if (rawQuestions.length === 0) {
-                container.textContent = 'Không có câu hỏi nào để chọn đáp án.';
+                errorMessage += `\nVui lòng điều chỉnh lại "Số lượng đề muốn tạo" hoặc "Số lượng câu hỏi mỗi đề".`;
+                alert(errorMessage);
                 return;
             }
 
-            rawQuestions.forEach((qData, qIndex) => {
-                const qItem = document.createElement('div');
-                qItem.classList.add('raw-question-item');
+            generatedExams = [];
+            let currentUniquePool = [...allBankQuestions]; // Pool for unique questions for all exams
 
-                const qText = document.createElement('p');
-                qText.textContent = `Câu hỏi ${qIndex + 1}: ${qData.question}`;
-                qItem.appendChild(qText);
+            for (let i = 0; i < numExams; i++) {
+                const examQuestions = [];
+                // Prioritize unique questions from the current pool
+                currentUniquePool.sort(() => Math.random() - 0.5); // Shuffle the unique pool
 
-                const answersDiv = document.createElement('div');
-                answersDiv.classList.add('raw-answers');
+                const numToTakeFromUniquePool = Math.min(questionsPerExam, currentUniquePool.length);
+                for (let j = 0; j < numToTakeFromUniquePool; j++) {
+                    examQuestions.push(currentUniquePool.shift()); // Take and remove from unique pool
+                }
 
-                qData.answers.forEach((answer, aIndex) => {
-                    const button = document.createElement('button');
-                    button.textContent = answer;
-                    button.dataset.qIndex = qIndex;
-                    button.dataset.aIndex = aIndex;
+                // If this is the "extra" exam (i.e., numExams > maxFullUniqueExams),
+                // and it still needs more questions, fill with random questions from the *entire original bank*
+                // This ensures the last exam is filled, allowing repetition.
+                if (examQuestions.length < questionsPerExam && i === maxFullUniqueExams) {
+                    const questionsToFill = questionsPerExam - examQuestions.length;
+                    const shuffledAllBankQuestions = [...allBankQuestions].sort(() => Math.random() - 0.5); // Shuffle entire bank for repetition
 
-                    if (qData.correctAnswer === answer) {
-                        button.classList.add('selected-correct');
+                    for (let k = 0; k < questionsToFill; k++) {
+                        // Add questions from the entire bank, allowing repetition
+                        examQuestions.push(shuffledAllBankQuestions[Math.floor(Math.random() * shuffledAllBankQuestions.length)]);
                     }
+                }
+                // Important: If numExams is less than maxFullUniqueExams,
+                // the loop just stops and takes the first 'numExams' generated, which are unique.
 
-                    button.onclick = function() {
-                        const siblings = this.parentNode.querySelectorAll('button');
-                        siblings.forEach(btn => btn.classList.remove('selected-correct'));
-                        this.classList.add('selected-correct');
-                        rawQuestions[qIndex].correctAnswer = answer;
-                    };
-                    answersDiv.appendChild(button);
-                });
-                qItem.appendChild(answersDiv);
-                container.appendChild(qItem);
+                generatedExams.push(examQuestions);
+            }
+            // No need to slice generatedExams, as the loop runs exactly `numExams` times.
+
+            displayExamButtons();
+            document.getElementById('examSelectionArea').style.display = 'block';
+        }
+
+        function displayExamButtons() {
+            const examListButtonsDiv = document.getElementById('examListButtons');
+            examListButtonsDiv.innerHTML = '';
+
+            generatedExams.forEach((exam, index) => {
+                const button = document.createElement('button');
+                button.textContent = `Làm Đề ${index + 1} (${exam.length} câu)`;
+                button.onclick = () => startExam(index);
+                examListButtonsDiv.appendChild(button);
             });
         }
 
-        // --- Export to Word (actually TXT) and Start Quiz ---
-        async function exportAndStartQuiz() {
-            const incompleteQuestions = rawQuestions.filter(q => !q.correctAnswer);
-            if (incompleteQuestions.length > 0) {
-                alert(`Vui lòng chọn đáp án đúng cho tất cả ${incompleteQuestions.length} câu hỏi chưa được chọn.`);
-                return;
-            }
+        function startExam(examIndex) {
+            console.log(`Starting Exam ${examIndex + 1}...`);
+            questions = generatedExams[examIndex];
+            originalQuestionsForRetake = JSON.parse(JSON.stringify(questions));
 
-            questions = [];
-            let wordContent = '';
-
-            rawQuestions.forEach((qData, qIndex) => {
-                // Store the full question object for the quiz
-                questions.push({
-                    question: qData.question,
-                    answers: qData.answers,
-                    correctAnswer: qData.correctAnswer
-                });
-
-                wordContent += `Câu hỏi ${qIndex + 1}: ${qData.question}\n`;
-                qData.answers.forEach(answer => {
-                    if (answer === qData.correctAnswer) {
-                        wordContent += `+${answer}\n`;
-                    } else {
-                        wordContent += `-${answer}\n`;
-                    }
-                });
-                wordContent += '\n';
+            currentQuestionIndex = 0;
+            score = 0;
+            incorrectlyAnsweredQuestions = [];
+            unansweredQuestions = [];
+            questions.forEach(q => {
+                q.attempted = false;
+                q.yourAnswer = undefined;
             });
+            shuffledQuestionIndices = [];
 
-            try {
-                const blob = new Blob([wordContent], { type: 'text/plain;charset=utf-8' });
-                saveAs(blob, `cau_hoi_trac_nghiem_${new Date().toLocaleDateString('vi-VN').replace(/\//g, '-')}.txt`);
-                alert('File câu hỏi định dạng đã được tạo và tải xuống (.txt). Bạn có thể mở nó bằng Word.');
-            } catch (error) {
-                console.error("Lỗi khi xuất file:", error);
-                alert("Đã xảy ra lỗi khi xuất file. Vui lòng kiểm tra console để biết chi tiết.");
-            }
-
-            const durationInput = document.getElementById('quizDuration'); // This element is in review section. Re-add to answerSelection or get value from default.
-            // For simplicity, let's add a duration input to the raw input section too, or default it.
-            // For now, I'll use a default value for raw input path
-            const duration = parseInt(document.getElementById('quizDuration').value || '10'); // Get from review section, or default to 10
+            const durationInput = document.getElementById('quizDuration').value || '10';
+            const duration = parseInt(durationInput);
             totalQuizDurationSeconds = duration * 60;
             timeLeft = totalQuizDurationSeconds;
 
-
-            if (questions.length > 0) {
-                startQuizDisplay();
-                shuffleQuestions();
-                loadQuestion();
-                startTimer();
-            } else {
-                alert('Không có câu hỏi nào để bắt đầu trắc nghiệm.');
-            }
-        }
-
-
-        // --- Quiz Logic ---
-
-        function shuffleQuestions() {
-            shuffledQuestionIndices = Array.from({ length: questions.length }, (_, i) => i);
-            for (let i = shuffledQuestionIndices.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffledQuestionIndices[i], shuffledQuestionIndices[j]] = [shuffledQuestionIndices[j], shuffledQuestionIndices[i]];
-            }
-            currentQuestionIndex = 0;
-            // score is reset at the start of a new quiz session or when returning to main selection
-            // incorrectlyAnsweredQuestions is reset at the start of a new quiz session or when returning to main selection
-            unansweredQuestions = []; // Reset unanswered questions for new quiz
-        }
-
-        function loadQuestion() {
-            const questionContainer = document.getElementById('currentQuestion');
-            const answerButtonsContainer = document.getElementById('answerButtons');
-            const resultDiv = document.getElementById('result');
-            const nextButton = document.getElementById('nextQuestionBtn');
-            const quizCompleteMessage = document.getElementById('quizCompleteMessage');
-            const finalScoreDisplay = document.getElementById('finalScore');
-            const incorrectAnswersListDiv = document.getElementById('incorrectAnswersList');
-            const retakeWrongBtn = document.getElementById('retakeWrongBtn');
-
-            resultDiv.textContent = '';
-            resultDiv.className = '';
-            nextButton.style.display = 'none';
-            quizCompleteMessage.style.display = 'none';
-            document.getElementById('quizContainer').style.display = 'block';
-            incorrectAnswersListDiv.innerHTML = ''; // Clear previous list of incorrect answers
-            retakeWrongBtn.style.display = 'none'; // Hide retake button by default
-
-            if (currentQuestionIndex >= shuffledQuestionIndices.length) {
-                endQuiz(); // Call endQuiz when all questions are attempted
-                return;
-            }
-
-            const questionData = questions[shuffledQuestionIndices[currentQuestionIndex]];
-            if (!questionData) {
-                console.error("Lỗi: Không tìm thấy dữ liệu câu hỏi cho chỉ mục:", shuffledQuestionIndices[currentQuestionIndex]);
-                currentQuestionIndex++;
-                loadQuestion();
-                return;
-            }
-
-            questionContainer.textContent = questionData.question;
-            answerButtonsContainer.innerHTML = '';
-
-            const shuffledAnswers = [...questionData.answers];
-            for (let i = shuffledAnswers.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffledAnswers[i], shuffledAnswers[j]] = [shuffledAnswers[j], shuffledAnswers[i]];
-            }
-
-            shuffledAnswers.forEach(answer => {
-                const button = document.createElement('button');
-                button.textContent = answer;
-                button.onclick = () => checkAnswer(button, answer, questionData); // Pass full questionData
-                answerButtonsContainer.appendChild(button);
-            });
-        }
-
-        function checkAnswer(selectedButton, selectedAnswer, questionData) {
-            const answerButtons = document.querySelectorAll('#answerButtons button');
-            const resultDiv = document.getElementById('result');
-            const nextButton = document.getElementById('nextQuestionBtn');
-
-            answerButtons.forEach(button => {
-                button.disabled = true;
-            });
-
-            const currentQuestionId = shuffledQuestionIndices[currentQuestionIndex];
-            // Mark this question as "attempted"
-            questions[currentQuestionId].attempted = true;
-
-
-            if (selectedAnswer === questionData.correctAnswer) {
-                selectedButton.classList.add('correct');
-                resultDiv.textContent = 'Đúng rồi!';
-                resultDiv.classList.add('correct-feedback');
-                score++;
-            } else {
-                selectedButton.classList.add('wrong');
-                resultDiv.textContent = 'Sai rồi. Đáp án đúng là: ' + questionData.correctAnswer;
-                resultDiv.classList.add('wrong-feedback');
-                
-                // Only add to incorrectlyAnsweredQuestions if not already there (prevents duplicates on retake)
-                const isAlreadyIncorrect = incorrectlyAnsweredQuestions.some(q => q === questionData);
-                if (!isAlreadyIncorrect) {
-                    // Add the original question object and the user's answer
-                    incorrectlyAnsweredQuestions.push({
-                        ...questionData,
-                        yourAnswer: selectedAnswer
-                    });
-                }
-
-                answerButtons.forEach(button => {
-                    if (button.textContent === questionData.correctAnswer) {
-                        button.classList.add('correct');
-                    }
-                });
-            }
-            nextButton.style.display = 'block';
-        }
-
-        function nextQuestion() {
-            currentQuestionIndex++;
-            loadQuestion();
-        }
-
-        // Timer Functions
-        function startTimer() {
-            const timerDisplay = document.getElementById('quizTimer');
-            timerDisplay.style.display = 'block'; // Show timer
-
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                timerDisplay.textContent = `Thời gian còn lại: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    timerDisplay.textContent = 'HẾT GIỜ!';
-                    endQuiz(true); // Call endQuiz, passing true for timed-out
-                }
-            }, 1000);
-        }
-
-        function stopTimer() {
-            clearInterval(timerInterval);
-            document.getElementById('quizTimer').style.display = 'none'; // Hide timer when not in quiz
-        }
-
-        function endQuiz(timedOut = false) {
-            stopTimer(); // Stop the timer
-
-            document.getElementById('quizContainer').style.display = 'none';
-            document.getElementById('result').textContent = ''; // Clear result feedback
-            document.getElementById('nextQuestionBtn').style.display = 'none'; // Hide next button
-            const quizCompleteMessage = document.getElementById('quizCompleteMessage');
-            const finalScoreDisplay = document.getElementById('finalScore');
-            const incorrectAnswersListDiv = document.getElementById('incorrectAnswersList');
-            const retakeWrongBtn = document.getElementById('retakeWrongBtn');
-
-            // Find unanswered questions
-            unansweredQuestions = questions.filter((q, index) => {
-                const originalIndex = shuffledQuestionIndices[currentQuestionIndex - 1]; // Current index before ending
-                // Check if the question was part of the shuffled set and if it was attempted
-                return !q.attempted && shuffledQuestionIndices.includes(questions.indexOf(q));
-            });
-
-            // If timed out, add remaining questions from currentQuestionIndex onwards to unanswered
-            if (timedOut) {
-                for (let i = currentQuestionIndex; i < shuffledQuestionIndices.length; i++) {
-                    const originalQIndex = shuffledQuestionIndices[i];
-                    if (!questions[originalQIndex].attempted) { // Ensure not already attempted and marked
-                         unansweredQuestions.push(questions[originalQIndex]);
-                    }
-                }
-                 quizCompleteMessage.querySelector('p:first-child').textContent = 'Thời gian đã hết!';
-            } else {
-                 quizCompleteMessage.querySelector('p:first-child').textContent = 'Chúc mừng! Bạn đã hoàn thành tất cả các câu hỏi.';
-            }
-
-
-            finalScoreDisplay.textContent = `Bạn đã trả lời đúng ${score} trên ${questions.length} câu hỏi.`;
-            incorrectAnswersListDiv.innerHTML = ''; // Clear previous list
-
-            if (incorrectlyAnsweredQuestions.length > 0) {
-                const listTitle = document.createElement('h3');
-                listTitle.textContent = 'Các câu bạn đã trả lời sai:';
-                incorrectAnswersListDiv.appendChild(listTitle);
-
-                incorrectlyAnsweredQuestions.forEach((item, index) => {
-                    const p = document.createElement('div');
-                    p.classList.add('incorrect-item');
-                    p.innerHTML = `
-                        <p><strong>Câu hỏi:</strong> ${item.question}</p>
-                        <p><strong>Đáp án của bạn:</strong> ${item.yourAnswer || 'Không có'}</p>
-                        <p><strong>Đáp án đúng:</strong> ${item.correctAnswer}</p>
-                    `;
-                    incorrectAnswersListDiv.appendChild(p);
-                });
-            }
-
-            if (unansweredQuestions.length > 0) {
-                const listTitle = document.createElement('h3');
-                listTitle.textContent = 'Các câu bạn chưa trả lời:';
-                incorrectAnswersListDiv.appendChild(listTitle);
-
-                unansweredQuestions.forEach((item, index) => {
-                    const p = document.createElement('div');
-                    p.classList.add('unanswered-item');
-                    p.innerHTML = `
-                        <p><strong>Câu hỏi:</strong> ${item.question}</p>
-                        <p><strong>Đáp án đúng:</strong> ${item.correctAnswer}</p>
-                    `;
-                    incorrectAnswersListDiv.appendChild(p);
-                });
-            }
-
-            if (incorrectlyAnsweredQuestions.length > 0 || unansweredQuestions.length > 0) {
-                 retakeWrongBtn.textContent = 'Làm lại các câu sai hoặc chưa làm';
-                retakeWrongBtn.style.display = 'block'; // Show retake button if there are wrong/unanswered answers
-            } else {
-                const p = document.createElement('p');
-                p.textContent = 'Tuyệt vời! Bạn đã trả lời đúng tất cả các câu hỏi.';
-                incorrectAnswersListDiv.appendChild(p);
-                 retakeWrongBtn.style.display = 'none';
-            }
-            quizCompleteMessage.style.display = 'block';
-
-            // Disable all answer buttons if quiz ended by time
-            const allAnswerButtons = document.querySelectorAll('#answerButtons button');
-            allAnswerButtons.forEach(button => button.disabled = true);
-        }
-
-
-        // New: Function to retake only incorrectly answered questions and unanswered ones
-        function retakeWrongQuestions() {
-            const questionsToRetake = [...incorrectlyAnsweredQuestions, ...unansweredQuestions];
-
-            if (questionsToRetake.length === 0) {
-                alert('Không có câu hỏi sai hoặc chưa làm để làm lại!');
-                return;
-            }
-
-            // Set the main 'questions' array to only the ones answered incorrectly or left unanswered
-            questions = questionsToRetake.map(q => ({...q, attempted: false, yourAnswer: undefined})); // Reset attempted status and user answer
-            incorrectlyAnsweredQuestions = []; // Clear for the new session
-            unansweredQuestions = []; // Clear for the new session
-
-            score = 0; // Reset score for the retake
-            document.getElementById('quizCompleteMessage').style.display = 'none'; // Hide completion message
-            document.getElementById('incorrectAnswersList').innerHTML = ''; // Clear previous list
-            document.getElementById('retakeWrongBtn').style.display = 'none'; // Hide retake button
-
-            // Start the quiz again with the new set of questions
+            startQuizDisplay();
             shuffleQuestions();
             loadQuestion();
-            // Re-start timer for retake
-            const durationInput = document.getElementById('quizDuration').value;
-            const duration = parseInt(durationInput);
-            totalQuizDurationSeconds = duration * 60; // Convert minutes to seconds
-            timeLeft = totalQuizDurationSeconds;
             startTimer();
         }
 
