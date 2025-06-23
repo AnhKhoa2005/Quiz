@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Học trắc nghiệm</title>
+    <title>Trắc Nghiệm Động</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.47.0/docxtemplater.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -204,6 +204,14 @@
             margin-bottom: 15px;
             text-align: center;
         }
+        /* New style for next exam button */
+        #nextExamBtn {
+            background-color: #17a2b8; /* Info blue */
+            margin-left: 10px;
+        }
+        #nextExamBtn:hover {
+            background-color: #138496;
+        }
     </style>
 </head>
 <body>
@@ -307,6 +315,7 @@
             <div id="incorrectAnswersList"></div>
             <button id="retakeWrongBtn" onclick="retakeWrongQuestions()" style="display: none;">Làm lại các câu sai</button>
             <button id="retakeAllBtn" onclick="retakeAllQuestions()" style="background-color: #17a2b8; display: none;">Làm lại toàn bộ đề</button>
+            <button id="nextExamBtn" onclick="loadNextExam()" style="display: none;">Làm Đề Tiếp Theo</button>
             <button onclick="backToMainSelection()">Quay lại màn hình chính</button>
         </div>
     </div>
@@ -325,7 +334,7 @@
         let rawQuestions = []; // Store questions parsed from raw input before selection
         let allBankQuestions = []; // Ngân hàng câu hỏi gốc (parsed from exam input)
         let generatedExams = []; // Mảng chứa các đề thi đã tạo
-
+        let currentExamIndex = -1; // New: To track which generated exam is currently active
 
         function showMainSelection() {
             console.log("Show Main Selection");
@@ -364,11 +373,13 @@
             rawQuestions = [];
             allBankQuestions = [];
             generatedExams = [];
+            currentExamIndex = -1; // Reset current exam index
 
             document.getElementById('quizContainer').style.display = 'none';
             document.getElementById('quizCompleteMessage').style.display = 'none';
             document.getElementById('retakeWrongBtn').style.display = 'none';
             document.getElementById('retakeAllBtn').style.display = 'none';
+            document.getElementById('nextExamBtn').style.display = 'none'; // Hide next exam button
             document.getElementById('incorrectAnswersList').innerHTML = '';
             document.getElementById('examGenerationSection').style.display = 'none';
             document.getElementById('examQuestionInput').value = ''; // Clear input for exam generation
@@ -512,6 +523,7 @@
 
             questions = parsedQuestions;
             originalQuestionsForRetake = JSON.parse(JSON.stringify(questions));
+            currentExamIndex = -1; // Not from generated exams
 
             const durationInput = document.getElementById('quizDurationManual').value;
             const duration = parseInt(durationInput);
@@ -538,6 +550,7 @@
 
             questions = parsedQuestions; // Set global questions for potential quiz start from here
             originalQuestionsForRetake = JSON.parse(JSON.stringify(questions)); // Store for retake all
+            currentExamIndex = -1; // Not from generated exams
 
             document.getElementById('manualInputSection').style.display = 'none';
             document.getElementById('manualAnswersReviewSection').style.display = 'block';
@@ -571,6 +584,7 @@
                 alert('Không có câu hỏi nào để bắt đầu trắc nghiệm.');
                 return;
             }
+            currentExamIndex = -1; // Not from generated exams
 
             const durationInput = document.getElementById('quizDurationManual').value; // Use the duration from the manual input section
             const duration = parseInt(durationInput);
@@ -670,6 +684,7 @@
             }
 
             originalQuestionsForRetake = JSON.parse(JSON.stringify(questions));
+            currentExamIndex = -1; // Not from generated exams
 
             const durationInput = document.getElementById('quizDuration').value;
             const duration = parseInt(durationInput);
@@ -838,6 +853,7 @@
             const incorrectAnswersListDiv = document.getElementById('incorrectAnswersList');
             const retakeWrongBtn = document.getElementById('retakeWrongBtn');
             const retakeAllBtn = document.getElementById('retakeAllBtn');
+            const nextExamBtn = document.getElementById('nextExamBtn'); // Get the new button
 
             incorrectlyAnsweredQuestions = questions.filter(q => q.attempted && q.yourAnswer !== q.correctAnswer);
             unansweredQuestions = questions.filter(q => !q.attempted);
@@ -891,6 +907,14 @@
 
             retakeAllBtn.style.display = 'block';
 
+            // Check if there is a next exam
+            if (currentExamIndex !== -1 && generatedExams.length > 0 && currentExamIndex < generatedExams.length - 1) {
+                nextExamBtn.style.display = 'inline-block'; // Show if a next exam exists
+            } else {
+                nextExamBtn.style.display = 'none'; // Hide if no next exam or not from generated exams
+            }
+
+
             quizCompleteMessage.style.display = 'block';
 
             const allAnswerButtons = document.querySelectorAll('#answerButtons button');
@@ -914,9 +938,11 @@
             document.getElementById('incorrectAnswersList').innerHTML = '';
             document.getElementById('retakeWrongBtn').style.display = 'none';
             document.getElementById('retakeAllBtn').style.display = 'none';
+            document.getElementById('nextExamBtn').style.display = 'none'; // Hide next exam button
 
             shuffleQuestions();
             loadQuestion();
+            // Use the duration from wherever the quiz originated (manual, raw, or generated)
             const durationInput = document.getElementById('quizDuration').value || document.getElementById('quizDurationManual').value || '10';
             const duration = parseInt(durationInput);
             totalQuizDurationSeconds = duration * 60;
@@ -938,10 +964,12 @@
             document.getElementById('incorrectAnswersList').innerHTML = '';
             document.getElementById('retakeWrongBtn').style.display = 'none';
             document.getElementById('retakeAllBtn').style.display = 'none';
+            document.getElementById('nextExamBtn').style.display = 'none'; // Hide next exam button
 
             shuffleQuestions();
             loadQuestion();
 
+            // Use the duration from wherever the quiz originated (manual, raw, or generated)
             const durationInput = document.getElementById('quizDuration').value || document.getElementById('quizDurationManual').value || '10';
             const duration = parseInt(durationInput);
             totalQuizDurationSeconds = duration * 60;
@@ -968,6 +996,7 @@
 
             allBankQuestions = [];
             generatedExams = [];
+            currentExamIndex = -1; // Reset when entering exam generation
             updateSuggestedNumExams(); // Update suggestion when section is shown
         }
 
@@ -1028,19 +1057,19 @@
             const maxFullUniqueExams = Math.floor(totalQuestionsInBank / questionsPerExam);
             const remainingQuestions = totalQuestionsInBank % questionsPerExam;
 
-            let suggestionText = `Có thể tạo tối đa <strong>${maxFullUniqueExams}</strong> đề duy nhất từ ngân hàng hiện có.`;
+            let suggestionText = `Ngân hàng đề có <strong>${totalQuestionsInBank}</strong> câu hỏi.`;
 
             if (totalQuestionsInBank === 0) {
                 suggestionText = `Ngân hàng đề trống.`;
-            } else if (maxFullUniqueExams === 0 && totalQuestionsInBank < questionsPerExam) {
-                // Case: Bank has questions, but not enough for even one full unique exam
-                suggestionText += ` (Ngân hàng có ${totalQuestionsInBank} câu hỏi. Để có 1 đề ${questionsPerExam} câu, sẽ cần bù đắp ${questionsPerExam - totalQuestionsInBank} câu ngẫu nhiên từ ngân hàng, có thể trùng lặp).`;
-            } else if (remainingQuestions > 0) {
-                // At least one full unique exam possible, and there are remainders
-                suggestionText += ` Bạn có thể tạo thêm <strong>1</strong> đề nữa (đề này sẽ bao gồm ${remainingQuestions} câu hỏi duy nhất còn lại và được bù đắp bằng ${questionsPerExam - remainingQuestions} câu ngẫu nhiên từ ngân hàng, có thể trùng lặp).`;
+            } else {
+                suggestionText += ` Có thể tạo tối đa <strong>${maxFullUniqueExams}</strong> đề với các câu hỏi hoàn toàn duy nhất.`;
+                if (remainingQuestions > 0) {
+                    suggestionText += ` Bạn có thể tạo thêm <strong>1</strong> đề nữa (đề này sẽ bao gồm ${remainingQuestions} câu hỏi duy nhất còn lại và được bù đắp bằng ${questionsPerExam - remainingQuestions} câu ngẫu nhiên từ ngân hàng).`;
+                }
+                suggestionText += ` <br>Bạn có thể tạo bất kỳ số lượng đề nào bạn muốn, nhưng các đề vượt quá số lượng đề duy nhất sẽ có câu hỏi trùng lặp từ ngân hàng đề.`;
             }
 
-            suggestedNumExamsSpan.innerHTML = suggestionText; // Use innerHTML for strong tag
+            suggestedNumExamsSpan.innerHTML = suggestionText;
         }
 
 
@@ -1067,63 +1096,69 @@
 
             const totalQuestionsInBank = allBankQuestions.length;
             const maxFullUniqueExams = Math.floor(totalQuestionsInBank / questionsPerExam);
-            const remainingUniqueQuestionsCount = totalQuestionsInBank % questionsPerExam;
+            // remainingQuestions is totalQuestionsInBank % questionsPerExam;
 
-            // Strict validation for 'numExams' beyond the allowed limit
-            // Block if requested exams are more than maxFullUniqueExams + 1
-            // Or if numExams is maxFullUniqueExams + 1 but there are no remaining unique questions (meaning the +1 exam would be entirely repeated)
-            if (numExams > maxFullUniqueExams + 1 || (numExams === maxFullUniqueExams + 1 && remainingUniqueQuestionsCount === 0)) {
-                let errorMessage = `Không thể tạo ${numExams} đề với ${questionsPerExam} câu hỏi mỗi đề.\n`;
-                errorMessage += `Ngân hàng đề chỉ có ${totalQuestionsInBank} câu hỏi duy nhất. \n`;
+            // Warn only if generating more exams than (max unique exams + one additional potentially repeated exam)
+            // The (maxFullUniqueExams + 1)th exam is considered the "additional" exam, which might be fully repeated if remainingQuestions is 0.
+            if (numExams > maxFullUniqueExams + 1) {
+                let warningMessage = `Bạn đang cố gắng tạo ${numExams} đề với ${questionsPerExam} câu mỗi đề.`;
 
-                if (maxFullUniqueExams > 0) {
-                    errorMessage += `Bạn chỉ có thể tạo tối đa ${maxFullUniqueExams} đề duy nhất. `;
-                    if (remainingUniqueQuestionsCount > 0) {
-                        errorMessage += `Hoặc thêm 1 đề thứ ${maxFullUniqueExams + 1} (có thể bao gồm câu hỏi trùng lặp để đủ số lượng).`;
-                    }
-                } else { // maxFullUniqueExams === 0
-                    if (totalQuestionsInBank > 0) { // Has some questions, but not enough for a full unique exam
-                         errorMessage += `Để tạo 1 đề ${questionsPerExam} câu, bạn cần ít nhất ${questionsPerExam} câu hỏi. Ngân hàng chỉ có ${totalQuestionsInBank} câu. Bạn có thể tạo 1 đề duy nhất (sẽ được bù đắp câu hỏi).`;
-                    } else { // No questions at all
-                         errorMessage += `Ngân hàng đề không có câu hỏi nào.`;
-                    }
+                // Calculate the effective number of "unique-ish" exams (fully unique + one using remaining unique if any)
+                const effectiveUniqueExamsCount = maxFullUniqueExams + (totalQuestionsInBank % questionsPerExam > 0 ? 1 : 0);
+
+                if (effectiveUniqueExamsCount === 0) {
+                    warningMessage += `\nNgân hàng đề chỉ có ${totalQuestionsInBank} câu hỏi, không đủ để tạo dù chỉ 1 đề có câu hỏi duy nhất.`;
+                    warningMessage += `\nCác đề bạn yêu cầu sẽ chứa rất nhiều câu hỏi trùng lặp từ ngân hàng đề.`;
+                } else if (numExams === effectiveUniqueExamsCount + 1) {
+                     // This case is actually caught by the main if condition, so this branch won't be hit with the current structure.
+                     // But if it were, it would mean the _first_ *fully* repeated exam.
+                     // This specific branch means numExams is (maxFullUniqueExams + 1) IF remainingQuestions was 0
+                     // OR numExams is (maxFullUniqueExams + 2) IF remainingQuestions was > 0
+                } else {
+                    // This covers numExams > effectiveUniqueExamsCount + 1
+                    warningMessage += `\nNgân hàng đề chỉ đủ để tạo tối đa ${effectiveUniqueExamsCount} đề sử dụng ít nhất một phần câu hỏi duy nhất.`;
+                    warningMessage += `\nCác đề này (từ đề thứ ${effectiveUniqueExamsCount + 1} trở đi) sẽ chứa rất nhiều câu hỏi trùng lặp từ ngân hàng đề.`;
                 }
-                errorMessage += `\nVui lòng điều chỉnh lại "Số lượng đề muốn tạo" hoặc "Số lượng câu hỏi mỗi đề".`;
-                alert(errorMessage);
-                return;
+                warningMessage += `\nBạn có muốn tiếp tục?`;
+
+                if (!confirm(warningMessage)) {
+                    return;
+                }
             }
 
+
             generatedExams = [];
-            let currentUniquePool = [...allBankQuestions]; // Pool for unique questions for all exams
+            // Create a temporary pool of questions for each exam, so we can ensure uniqueness within the *initial* exams.
+            // This pool will shrink.
+            let uniquePoolForGeneration = [...allBankQuestions];
 
             for (let i = 0; i < numExams; i++) {
                 const examQuestions = [];
-                // Prioritize unique questions from the current pool
-                currentUniquePool.sort(() => Math.random() - 0.5); // Shuffle the unique pool
+                // Shuffle the remaining unique pool for this exam
+                uniquePoolForGeneration.sort(() => Math.random() - 0.5);
 
-                const numToTakeFromUniquePool = Math.min(questionsPerExam, currentUniquePool.length);
-                for (let j = 0; j < numToTakeFromUniquePool; j++) {
-                    examQuestions.push(currentUniquePool.shift()); // Take and remove from unique pool
+                // Take questions from the unique pool first
+                let numTakenFromUnique = 0;
+                while (examQuestions.length < questionsPerExam && uniquePoolForGeneration.length > 0) {
+                    examQuestions.push(uniquePoolForGeneration.shift());
+                    numTakenFromUnique++;
                 }
 
-                // If this is the "extra" exam (i.e., numExams > maxFullUniqueExams),
-                // and it still needs more questions, fill with random questions from the *entire original bank*
-                // This ensures the last exam is filled, allowing repetition.
-                if (examQuestions.length < questionsPerExam && i === maxFullUniqueExams) {
+                // If not enough questions from the unique pool, fill from the entire bank (allowing repetition)
+                if (examQuestions.length < questionsPerExam) {
                     const questionsToFill = questionsPerExam - examQuestions.length;
-                    const shuffledAllBankQuestions = [...allBankQuestions].sort(() => Math.random() - 0.5); // Shuffle entire bank for repetition
+                    const shuffledAllBankQuestions = [...allBankQuestions].sort(() => Math.random() - 0.5); // Shuffle entire bank for random selection
 
                     for (let k = 0; k < questionsToFill; k++) {
                         // Add questions from the entire bank, allowing repetition
-                        examQuestions.push(shuffledAllBankQuestions[Math.floor(Math.random() * shuffledAllBankQuestions.length)]);
+                        // Ensure we don't pick from an empty bank if it's somehow empty (though already checked above)
+                        if (shuffledAllBankQuestions.length > 0) {
+                            examQuestions.push(shuffledAllBankQuestions[Math.floor(Math.random() * shuffledAllBankQuestions.length)]);
+                        }
                     }
                 }
-                // Important: If numExams is less than maxFullUniqueExams,
-                // the loop just stops and takes the first 'numExams' generated, which are unique.
-
                 generatedExams.push(examQuestions);
             }
-            // No need to slice generatedExams, as the loop runs exactly `numExams` times.
 
             displayExamButtons();
             document.getElementById('examSelectionArea').style.display = 'block';
@@ -1143,6 +1178,8 @@
 
         function startExam(examIndex) {
             console.log(`Starting Exam ${examIndex + 1}...`);
+            currentExamIndex = examIndex; // Set the current exam index
+
             questions = generatedExams[examIndex];
             originalQuestionsForRetake = JSON.parse(JSON.stringify(questions));
 
@@ -1156,6 +1193,7 @@
             });
             shuffledQuestionIndices = [];
 
+            // Use the duration from quizDuration (from raw/review input) or a default
             const durationInput = document.getElementById('quizDuration').value || '10';
             const duration = parseInt(durationInput);
             totalQuizDurationSeconds = duration * 60;
@@ -1165,6 +1203,16 @@
             shuffleQuestions();
             loadQuestion();
             startTimer();
+        }
+
+        function loadNextExam() {
+            if (currentExamIndex !== -1 && currentExamIndex < generatedExams.length - 1) {
+                currentExamIndex++; // Move to the next exam
+                startExam(currentExamIndex); // Start the next exam
+            } else {
+                alert('Không còn đề tiếp theo để làm!');
+                document.getElementById('nextExamBtn').style.display = 'none'; // Hide button if no more exams
+            }
         }
 
         document.addEventListener('DOMContentLoaded', showMainSelection);
