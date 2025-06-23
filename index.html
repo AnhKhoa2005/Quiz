@@ -759,7 +759,14 @@
             const currentQuestion = questions[actualQuestionIndex];
 
             document.getElementById('question').textContent = `Câu ${currentQuestionIndex + 1}: ${currentQuestion.question}`;
-            document.getElementById('currentQuestionIndicator').textContent = `Câu ${currentQuestionIndex + 1} / ${questions.length}`;
+
+            // Updated to show exam number if it's a generated exam
+            let indicatorText = `Câu ${currentQuestionIndex + 1} / ${questions.length}`;
+            if (currentExamIndex !== -1 && generatedExams.length > 0) {
+                indicatorText = `Đề ${currentExamIndex + 1} / ${generatedExams.length} - ${indicatorText}`;
+            }
+            document.getElementById('currentQuestionIndicator').textContent = indicatorText;
+
 
             const answerButtonsDiv = document.getElementById('answerButtons');
             answerButtonsDiv.innerHTML = '';
@@ -1104,21 +1111,13 @@
                 let warningMessage = `Bạn đang cố gắng tạo ${numExams} đề với ${questionsPerExam} câu mỗi đề.`;
 
                 // Calculate the effective number of "unique-ish" exams (fully unique + one using remaining unique if any)
+                // This is used for the warning text to inform user about how many exams COULD have unique questions.
                 const effectiveUniqueExamsCount = maxFullUniqueExams + (totalQuestionsInBank % questionsPerExam > 0 ? 1 : 0);
 
-                if (effectiveUniqueExamsCount === 0) {
-                    warningMessage += `\nNgân hàng đề chỉ có ${totalQuestionsInBank} câu hỏi, không đủ để tạo dù chỉ 1 đề có câu hỏi duy nhất.`;
-                    warningMessage += `\nCác đề bạn yêu cầu sẽ chứa rất nhiều câu hỏi trùng lặp từ ngân hàng đề.`;
-                } else if (numExams === effectiveUniqueExamsCount + 1) {
-                     // This case is actually caught by the main if condition, so this branch won't be hit with the current structure.
-                     // But if it were, it would mean the _first_ *fully* repeated exam.
-                     // This specific branch means numExams is (maxFullUniqueExams + 1) IF remainingQuestions was 0
-                     // OR numExams is (maxFullUniqueExams + 2) IF remainingQuestions was > 0
-                } else {
-                    // This covers numExams > effectiveUniqueExamsCount + 1
-                    warningMessage += `\nNgân hàng đề chỉ đủ để tạo tối đa ${effectiveUniqueExamsCount} đề sử dụng ít nhất một phần câu hỏi duy nhất.`;
-                    warningMessage += `\nCác đề này (từ đề thứ ${effectiveUniqueExamsCount + 1} trở đi) sẽ chứa rất nhiều câu hỏi trùng lặp từ ngân hàng đề.`;
-                }
+                // The warning is for exams BEYOND the 'effectiveUniqueExamsCount' or 'maxFullUniqueExams + 1' (as requested by user)
+                warningMessage += `\nNgân hàng đề chỉ đủ để tạo tối đa ${effectiveUniqueExamsCount} đề sử dụng ít nhất một phần câu hỏi duy nhất.`;
+                warningMessage += `\nCác đề này (từ đề thứ ${effectiveUniqueExamsCount + 1} trở đi) sẽ chứa rất nhiều câu hỏi trùng lặp từ ngân hàng đề.`;
+                
                 warningMessage += `\nBạn có muốn tiếp tục?`;
 
                 if (!confirm(warningMessage)) {
