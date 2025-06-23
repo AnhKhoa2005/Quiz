@@ -936,10 +936,12 @@
                 return;
             }
 
+            // Create a fresh copy of questions to retake, resetting flags
             questions = questionsToRetake.map(q => ({...q, attempted: false, yourAnswer: undefined}));
             incorrectlyAnsweredQuestions = [];
             unansweredQuestions = [];
             score = 0;
+            currentQuestionIndex = 0; // Reset question index
 
             document.getElementById('quizCompleteMessage').style.display = 'none';
             document.getElementById('incorrectAnswersList').innerHTML = '';
@@ -947,6 +949,7 @@
             document.getElementById('retakeAllBtn').style.display = 'none';
             document.getElementById('nextExamBtn').style.display = 'none'; // Hide next exam button
 
+            startQuizDisplay(); // Ensure quiz container is visible
             shuffleQuestions();
             loadQuestion();
             // Use the duration from wherever the quiz originated (manual, raw, or generated)
@@ -962,10 +965,16 @@
                 alert('Không có đề nào để làm lại. Vui lòng bắt đầu một bài trắc nghiệm mới.');
                 return;
             }
-            questions = JSON.parse(JSON.stringify(originalQuestionsForRetake));
+            questions = JSON.parse(JSON.stringify(originalQuestionsForRetake)); // Ensure deep copy
+            questions.forEach(q => { // Reset flags for each question
+                q.attempted = false;
+                q.yourAnswer = undefined;
+            });
+
             incorrectlyAnsweredQuestions = [];
             unansweredQuestions = [];
             score = 0;
+            currentQuestionIndex = 0; // Reset question index
 
             document.getElementById('quizCompleteMessage').style.display = 'none';
             document.getElementById('incorrectAnswersList').innerHTML = '';
@@ -973,6 +982,7 @@
             document.getElementById('retakeAllBtn').style.display = 'none';
             document.getElementById('nextExamBtn').style.display = 'none'; // Hide next exam button
 
+            startQuizDisplay(); // Ensure quiz container is visible
             shuffleQuestions();
             loadQuestion();
 
